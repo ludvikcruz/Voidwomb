@@ -6,7 +6,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Django + Tailwind CSS + Flowbite</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <title>Voidwomb</title>
 
     {% compress css %}
     <link rel="stylesheet" href="{% static 'src/css/output.css' %}">
@@ -14,12 +17,14 @@
 
 </head>
 
-<body class="bg-green-50">
+<body >
     {%include 'nav_footer/nav.html'%}
     <div class="container mx-auto mt-4">
         {% block content %}
-        {% endblock content %}
+        
+        {% endblock content %}       
     </div>
     {%include 'nav_footer/footer.html'%}
 </body>
+<script src="../path/to/flowbite/dist/flowbite.min.js"></script>
 </html>

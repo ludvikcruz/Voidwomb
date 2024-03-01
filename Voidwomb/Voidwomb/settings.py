@@ -120,20 +120,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-    # Ensure the path here is correct relative to your BASE_DIR
-]
 
+
+STATICFILES_FINDERS = [
+    # Other finders...
+    'compressor.finders.CompressorFinder',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-COMPRESS_ROOT = BASE_DIR / 'static/css/'
-
-
+COMPRESS_URL = '/static/'
+COMPRESS_ROOT = 'Void/static'
 COMPRESS_ENABLED = True
+COMPRESS_STORAGE = 'compressor.storage.GzipCompressorFileStorage'
+
+
 
 STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)

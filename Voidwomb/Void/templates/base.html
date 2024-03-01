@@ -1,5 +1,3 @@
-<!-- templates/_base.html -->
-
 {% load compress %}
 {% load static %}
 
@@ -19,7 +17,7 @@
 </head>
 
 <body class="bg-green-50">
-    {%  %}
+    {%include 'nav_footer/nav.html'%}
     <div class="container mx-auto mt-4">
         {% block content %}
         {% endblock content %}

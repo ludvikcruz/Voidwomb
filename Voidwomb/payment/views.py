@@ -1,13 +1,18 @@
-from django.shortcuts import render
+# payment/views.py
 from django.shortcuts import redirect
 from django.http import JsonResponse
 import paypalrestsdk
+import environ
+
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
 
 def create_payment(request):
     paypalrestsdk.configure({
         "mode": "sandbox",  # Ou "live" para produção
-        "client_id": "SEU_CLIENT_ID_AQUI",
-        "client_secret": "SEU_CLIENT_SECRET_AQUI"
+        "client_id": env('PAYPAL_CLIENT_ID'),
+        "client_secret": env('PAYPAL_CLIENT_SECRET')
     })
 
     payment = paypalrestsdk.Payment({

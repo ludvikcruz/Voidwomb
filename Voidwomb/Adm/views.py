@@ -5,7 +5,7 @@ from .forms import ProdutoForm  # Supondo que você tenha um formulário Django 
 
 def lista_produtos(request):
     produtos = Produto.objects.all()
-    return render(request, 'SeuApp/lista_produtos.html', {'produtos': produtos})
+    return render(request, 'Adm/lista_produtos.html', {'produtos': produtos})
 
 def adicionar_produto(request):
     if request.method == "POST":
@@ -15,7 +15,7 @@ def adicionar_produto(request):
             return redirect('lista_produtos')
     else:
         form = ProdutoForm()
-    return render(request, 'SeuApp/form_produto.html', {'form': form})
+    return render(request, 'Adm/form_produto.html', {'form': form})
 
 def editar_produto(request, id):
     produto = get_object_or_404(Produto, id=id)
@@ -26,8 +26,11 @@ def editar_produto(request, id):
             return redirect('lista_produtos')
     else:
         form = ProdutoForm(instance=produto)
-    return render(request, 'SeuApp/form_produto.html', {'form': form})
+    return render(request, 'Adm/form_produto.html', {'form': form})
 
 def eliminar_produto(request, id):
     produto = get_object_or_404(Produto, id=id)
     if request.method == "POST":
+        produto.delete()
+        return redirect('lista_produtos')
+    return render(request, 'Adm/confirmar_eliminar.html', {'produto': produto})

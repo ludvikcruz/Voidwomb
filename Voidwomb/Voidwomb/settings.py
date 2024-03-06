@@ -151,3 +151,5 @@ COMPRESS_STORAGE = 'compressor.storage.GzipCompressorFileStorage'
 STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
 
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

@@ -8,6 +8,8 @@ class Produto(models.Model):
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
     sku = models.CharField(max_length=100)
+    cor = models.CharField(max_length=50,blank=True, null=True)  # Exemplo simples como texto livre
+    tamanho = models.CharField(max_length=50,blank=True, null=True)
     imagem = models.ImageField(upload_to='produtos_imagens/', blank=True, null=True)
     def __str__(self):
         return self.nome

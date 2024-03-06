@@ -8,8 +8,8 @@ def lista_produtos(request):
     return render(request, 'lista_produtos.html', {'produtos': produtos})
 
 def adicionar_produto(request):
-    if request.method == "POST":
-        form = ProdutoForm(request.POST)
+    if request.method == 'POST':
+        form = ProdutoForm(request.POST, request.FILES)  # Inclua request.FILES aqui
         if form.is_valid():
             form.save()
             return redirect('lista_produtos')
@@ -19,8 +19,8 @@ def adicionar_produto(request):
 
 def editar_produto(request, id):
     produto = get_object_or_404(Produto, id=id)
-    if request.method == "POST":
-        form = ProdutoForm(request.POST, instance=produto)
+    if request.method == 'POST':
+        form = ProdutoForm(request.POST, request.FILES, instance=produto)  # Inclua request.FILES aqui
         if form.is_valid():
             form.save()
             return redirect('lista_produtos')

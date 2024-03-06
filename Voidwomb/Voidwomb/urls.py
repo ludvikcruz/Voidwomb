@@ -25,4 +25,5 @@ urlpatterns = [
     path('contact',views.contact,name = 'contact'),
     path('store',views.store,name = 'store'),
     path('payment/', include('payment.urls')),
+    path('Adm/',include('Adm.urls'))
 ]

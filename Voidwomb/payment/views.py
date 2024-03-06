@@ -16,7 +16,30 @@ def create_payment(request):
     })
 
     payment = paypalrestsdk.Payment({
-        # Configuração do pagamento aqui
+        "intent": "sale",
+        "payer": {
+            "payment_method": "paypal",
+        },
+        "redirect_urls": {
+            "return_url": "URL_PARA_ONDE_O_USUARIO_DEVE_SER_REDIRECIONADO_APOS_PAGAMENTO",
+            "cancel_url": "URL_PARA_ONDE_O_USUARIO_DEVE_SER_REDIRECIONADO_SE_CANCELAR_O_PAGAMENTO",
+        },
+        "transactions": [{
+            "item_list": {
+                "items": [{
+                    "name": "Nome do item",
+                    "sku": "Código SKU",
+                    "price": "Preço unitário",
+                    "currency": "Moeda",
+                    "quantity": "Quantidade",
+                }]
+            },
+            "amount": {
+                "total": "Preço total",
+                "currency": "EUR",
+            },
+            "description": "Descrição da transação",
+        }]
     })
 
     if payment.create():

@@ -1,0 +1,5 @@
+.bg-image-blur {
+    @apply bg-no-repeat bg-center bg-cover blur-lg;
+    background-image: url('/Voidwomb/Void/static/src/img/Voidwomb-foto.jpg');
+  }
+  

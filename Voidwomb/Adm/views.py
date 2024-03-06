@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Produto
+from Void.models import Produto
 from .forms import ProdutoForm  # Supondo que você tenha um formulário Django para o produto
 
 def lista_produtos(request):

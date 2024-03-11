@@ -3,7 +3,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from Void.models import Produto
 import openpyxl
 from django.core.files.base import ContentFile
-from .forms import ProdutoForm,UploadExcelForm # Supondo que você tenha um formulário Django para o produto
+from .forms import ProdutoForm,UploadExcelForm 
+from django.contrib.auth import authenticate, login
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+
 
 def lista_produtos(request):
     produtos = Produto.objects.all()
@@ -75,7 +79,28 @@ def upload_excel_view(request):
 
 
 def login_view(request):
-    return render(request,'login.html')
+    # Se o usuário já está logado, redirecioná-lo.
+    if request.user.is_authenticated:
+        return redirect('nome_da_url_para_redirecionar_após_login')
 
+    if request.method == 'POST':
+        # Pegar as informações do formulário.
+        username = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # Autenticar o usuário.
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            # Se a autenticação foi bem-sucedida, faça login do usuário e redirecione para a página desejada.
+            login(request, user)
+            return HttpResponseRedirect(reverse('lista_produtos'))
+        else:
+            # Se a autenticação falhou, retorne algum erro.
+            return render(request, 'login.html', {'error': 'Username or password is incorrect.'})
+    else:
+        # Método GET, renderize o formulário de login.
+        return render(request, 'login.html')
+    
 def register_view():
     pass

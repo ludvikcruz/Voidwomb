@@ -72,3 +72,10 @@ def upload_excel_view(request):
     else:
         form = UploadExcelForm()
     return render (request,'exelform.html', {'form': form})
+
+
+def login_view(request):
+    return render(request,'login.html')
+
+def register_view():
+    pass

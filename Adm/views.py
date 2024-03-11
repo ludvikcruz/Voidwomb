@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from Void.models import Produto
+import openpyxl
+from django.core.files.base import ContentFile
 from .forms import ProdutoForm,UploadExcelForm # Supondo que você tenha um formulário Django para o produto
 
 def lista_produtos(request):
@@ -44,22 +46,21 @@ def upload_excel_view(request):
             sheet = wb.active
 
             for row in sheet.iter_rows(min_row=2, values_only=True):
-                produto = MyModel(
-                    nome=row[1],
-                    descricao=row[2],
-                    preco=row[3],
-                    stock=row[4],
-                    sku=row[5],
-                    categoria=row[6],
-                    cor=row[7],
-                    tamanho=row[8],
-                    # imagem será tratada abaixo
+                produto = Produto(
+                    nome=row[0],
+                    descricao=row[1],
+                    preco=row[2],
+                    stock=row[3],
+                    sku=row[4],
+                    categoria=row[5],
+                    cor=row[6],
+                    tamanho=row[7],
                 )
 
-                imagem_url = row[9]  # Ajuste o índice conforme a sua planilha
+                imagem_url = row[8] if len(row) > 9 else None# Ajuste o índice conforme a sua planilha
                 if imagem_url:
                     try:
-                        response = requests.get(imagem_url)
+                        response = request.get(imagem_url)
                         img_temp = ContentFile(response.content)
                         produto.imagem.save(f"{row[5]}_image.jpg", img_temp)
                     except Exception as e:
@@ -67,7 +68,7 @@ def upload_excel_view(request):
 
                 produto.save()
 
-            return redirect('alguma-url-de-sucesso')
+            return redirect('home')
     else:
         form = UploadExcelForm()
     return render (request,'exelform.html', {'form': form})

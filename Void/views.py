@@ -38,3 +38,8 @@ def store(request):
 
 def about(request):
     return render(request,'about.html')
+
+def single(request):
+    produtos = Produto.objects.all()
+    
+    return render(request, 'single.html',{'produtos':produtos})

@@ -1,0 +1,99 @@
+{% load compress %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <title>Voidwomb</title>
+
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'src/css/output.css' %}">
+    {% endcompress %}
+
+</head>
+
+<body >
+    {%include 'nav_footer/nav.html'%}
+    <div class="absolute top-0 w-full h-screen z-0 filter blur-8" style="line-height: 0;"> 
+        <img src="static/src/img/Voidwomb-foto.jpg" alt="Background" class="w-full h-full object-cover fixed top-0 left-0" style="margin: 0; padding: 0; border: none;">
+    </div>
+    
+    <div class="container relative mx-auto mt-4">
+        <div id = 'store' >
+            <div class="flex justify-center gap-4">
+                {% if produtos%}
+                {% for produto in produtos %}
+                <div class="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 z-10 relative">
+                    <a href="#">
+                        <img class="p-2 rounded-t-lg" src="../static/src/img/Tshirt-AOCD.jpg" alt="product image" />
+                    </a>
+                    <div class="px-5 pb-5">
+                        <a href="#">
+                            <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">{{produto.nome}}</h5>
+                        </a>
+                        {% if produto.tamanho%}
+                        <a href="#">
+                            <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Colour: {{produto.cor}}</h5>
+                        </a>
+                        {% endif %}
+                        {% if produto.tamanho%}
+                        <a href="#">
+                            <h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Size: {{produto.tamanho}}</h5>
+                        </a>
+                        {% endif %}
+                        <div class="flex items-center justify-between">
+                            <span class="text-3xl font-bold text-gray-900 dark:text-white">{{produto.preco}}</span>
+                            <a href="#" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Buy Now!</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <section class="bg-white dark:bg-gray-900">
+                    <div class="py-8 px-4 mx-auto max-w-screen-md text-center lg:py-16 lg:px-12">
+                        <svg class="mx-auto mb-4 w-10 h-10 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M331.8 224.1c28.29 0 54.88 10.99 74.86 30.97l19.59 19.59c40.01-17.74 71.25-53.3 81.62-96.65c5.725-23.92 5.34-47.08 .2148-68.4c-2.613-10.88-16.43-14.51-24.34-6.604l-68.9 68.9h-75.6V97.2l68.9-68.9c7.912-7.912 4.275-21.73-6.604-24.34c-21.32-5.125-44.48-5.51-68.4 .2148c-55.3 13.23-98.39 60.22-107.2 116.4C224.5 128.9 224.2 137 224.3 145l82.78 82.86C315.2 225.1 323.5 224.1 331.8 224.1zM384 278.6c-23.16-23.16-57.57-27.57-85.39-13.9L191.1 158L191.1 95.99l-127.1-95.99L0 63.1l96 127.1l62.04 .0077l106.7 106.6c-13.67 27.82-9.251 62.23 13.91 85.39l117 117.1c14.62 14.5 38.21 14.5 52.71-.0016l52.75-52.75c14.5-14.5 14.5-38.08-.0016-52.71L384 278.6zM227.9 307L168.7 247.9l-148.9 148.9c-26.37 26.37-26.37 69.08 0 95.45C32.96 505.4 50.21 512 67.5 512s34.54-6.592 47.72-19.78l119.1-119.1C225.5 352.3 222.6 329.4 227.9 307zM64 472c-13.25 0-24-10.75-24-24c0-13.26 10.75-24 24-24S88 434.7 88 448C88 461.3 77.25 472 64 472z"/></svg>
+                        <h1 class="mb-4 text-4xl font-bold tracking-tight leading-none text-gray-900 lg:mb-6 md:text-5xl xl:text-6xl dark:text-white">No Produtcs</h1>
+                        <p class="font-light text-gray-500 md:text-lg xl:text-xl dark:text-gray-400">Products are being added</p>
+                    </div>
+                </section>
+                {% endif %}
+                </div>
+        </div>
+    <br>
+    <br>
+        <div id='contact'>
+            <form action="{% url 'contact' %}" method="post">
+                {% csrf_token %}
+                <section class="bg-white dark:bg-gray-900">
+                    <div class="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
+                        <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-white">Contact Us</h2>
+                        <p class="mb-8 lg:mb-16 font-light text-center text-gray-500 dark:text-gray-400 sm:text-xl">voidwomb.band [at] gmail.com</p>
+                        <form action="#" class="space-y-8">
+                            <div>
+                                <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Your email</label>
+                                <input type="email" name='email' id="email" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="name@email.com" required>
+                            </div>
+                            <div>
+                                <label for="subject" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">Subject</label>
+                                <input type="text" name='subject' id="subject" class="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light" placeholder="Let us know how we can help you" required>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400">Your message</label>
+                                <textarea id="message" name='body' rows="6" style=" max-height: 200px;" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Write the text..."></textarea>
+                            </div>
+                            <button type="submit" class="py-3 px-5 text-sm font-medium text-center text-Black rounded-lg bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Send message</button>
+                        </form>
+                    </div>
+                  </section>
+            </form>
+        </div>
+    </div>
+    {%include 'nav_footer/footer.html'%}
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.js"></script>
+</html>

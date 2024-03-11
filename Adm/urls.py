@@ -9,6 +9,7 @@ urlpatterns = [
     path('produto/editar/<int:id>/', views.editar_produto, name='editar_produto'),
     path('produto/eliminar/<int:id>/', views.eliminar_produto, name='eliminar_produto'),
     path('produtos/', views.lista_produtos, name='lista_produtos'),
+    path('upload-excel/', views.upload_excel_view, name='upload_excel'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

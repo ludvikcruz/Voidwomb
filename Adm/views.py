@@ -104,3 +104,7 @@ def login_view(request):
     
 def register_view():
     pass
+
+def adm(request):
+    
+    return render(request,'adm.html')

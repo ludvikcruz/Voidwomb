@@ -5,6 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('',views.adm,name='admin'),
     path('produto/adicionar/', views.adicionar_produto, name='adicionar_produto'),
     path('produto/editar/<int:id>/', views.editar_produto, name='editar_produto'),
     path('produto/eliminar/<int:id>/', views.eliminar_produto, name='eliminar_produto'),

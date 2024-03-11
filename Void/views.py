@@ -21,7 +21,7 @@ def contact(request):
             subject=subject,
             message=full_message,
             from_email=email,
-            recipient_list=[''],  # Substitua pelo e-mail que receberá a mensagem
+            recipient_list=['esquilogpg2@gmail.com'],  # Substitua pelo e-mail que receberá a mensagem
         )
         
         return redirect('contact')
@@ -32,6 +32,7 @@ def rituals(request):
 
 def store(request):
     produtos = Produto.objects.all()
+
     
     return render(request,'store.html',{'produtos':produtos})
 

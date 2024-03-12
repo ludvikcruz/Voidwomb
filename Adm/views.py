@@ -5,7 +5,7 @@ from django.contrib import messages
 import openpyxl
 from django.core.files.base import ContentFile
 from .forms import ProdutoForm,UploadExcelForm 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
@@ -108,3 +108,7 @@ def register_view():
 def adm(request):
     
     return render(request,'adm.html')
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('home'))

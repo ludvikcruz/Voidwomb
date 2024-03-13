@@ -53,3 +53,21 @@ def create_payment(request):
 
     return JsonResponse({'error': 'Erro ao criar o pagamento'})
 
+
+from django.shortcuts import redirect, get_object_or_404
+from .models import Produto
+from .carrinho import add_to_cart
+
+def exibir_carrinho(request):
+    cart = get_cart(request)
+    cart_items = []
+    total = 0
+    for produto_id, quantity in cart.items():
+        produto = get_object_or_404(Produto, id=produto_id)
+        subtotal = produto.preco * quantity
+        total += subtotal
+        cart_items.append({'produto': produto, 'quantity': quantity, 'subtotal': subtotal})
+    
+    return render(request, 'carrinho.html', {'cart_items': cart_items, 'total': total})
+
+

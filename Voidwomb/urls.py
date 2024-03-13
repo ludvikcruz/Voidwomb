@@ -28,6 +28,8 @@ urlpatterns = [
     path('store',views.store,name = 'store'),
     path('payment/', include('payment.urls')),
     path('Adm/',include('Adm.urls')),
+    path('carrinho/adicionar/<int:produto_id>/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
+    path('carrinho/',views.carrinho,name='carrinho'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

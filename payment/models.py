@@ -12,3 +12,13 @@ class Sale(models.Model):
 
     def __str__(self):
         return f"{self.product_name} ({self.quantity}) - {self.date}"
+    
+    
+    
+class ItemCarrinho(models.Model):
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+    quantidade = models.IntegerField(default=1)
+    preco = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.quantidade} de {self.produto.nome}"

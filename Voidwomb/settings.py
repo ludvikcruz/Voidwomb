@@ -159,7 +159,7 @@ STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
 
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'# settings.py
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 

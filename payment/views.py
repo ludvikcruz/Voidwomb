@@ -14,7 +14,6 @@ def create_payment(request):
         "client_id": env('PAYPAL_CLIENT_ID'),
         "client_secret": env('PAYPAL_CLIENT_SECRET')
     })
-
     payment = paypalrestsdk.Payment({
         "intent": "sale",
         "payer": {
@@ -30,7 +29,7 @@ def create_payment(request):
                     "name": "Nome do item",
                     "sku": "Código SKU",
                     "price": "Preço unitário",
-                    "currency": "Moeda",
+                    "currency": "EUR",
                     "quantity": "Quantidade",
                 }]
             },

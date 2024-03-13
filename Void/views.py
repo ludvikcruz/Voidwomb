@@ -32,7 +32,7 @@ def rituals(request):
 
 def store(request):
     produtos = Produto.objects.all()
-
+    
     
     return render(request,'store.html',{'produtos':produtos})
 

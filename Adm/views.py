@@ -8,11 +8,19 @@ from .forms import ProdutoForm,UploadExcelForm
 from django.contrib.auth import authenticate, login,logout
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.core.paginator import Paginator
 
 
 def lista_produtos(request):
-    produtos = Produto.objects.all()
-    return render(request, 'lista_produtos.html', {'produtos': produtos})
+    produtos_list = Produto.objects.all()
+    paginator = Paginator(produtos_list, 10) # Mostra 10 produtos por página
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'lista_produtos.html', {'page_obj': page_obj})
+
+
 
 def adicionar_produto(request):
     if request.method == 'POST':
@@ -94,11 +102,11 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request,"Login bem sucedido") 
-            return HttpResponseRedirect(reverse('lista_produtos'))
+            return HttpResponseRedirect(reverse('admin'))
         else:
             # Se a autenticação falhou, retorne algum erro.
             messages.error(request,'Email ou password incorretos.')
-            return render(request, 'login.html')
+            return HttpResponseRedirect(reverse('login'))
         # Método GET, renderize o formulário de login.
     return render(request, 'login.html')
     

@@ -17,9 +17,16 @@ class ProdutoForm(forms.ModelForm):
         }
         
         
+
 class UploadExcelForm(forms.Form):
     excel_file = forms.FileField()
-    
+
+    def __init__(self, *args, **kwargs):
+        super(UploadExcelForm, self).__init__(*args, **kwargs)
+        self.fields['excel_file'].widget.attrs.update({
+            'class': 'block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400'
+        })
+
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     password_confirm = forms.CharField(widget=forms.PasswordInput, label="Confirm password")

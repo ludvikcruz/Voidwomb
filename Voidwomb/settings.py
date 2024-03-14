@@ -13,10 +13,17 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 import environ
-
+from dotenv import load_dotenv
 # Initialise environment variables
 env = environ.Env()
 environ.Env.read_env()
+load_dotenv()
+
+
+#paypal settings
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
+PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
+PAYPAL_MODE = 'sandbox'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -38,7 +45,7 @@ SECRET_KEY = 'django-insecure-3vndy%grhk*7v(et3lpwn1+0_-)776klg0@6vx)#2krt==^@z9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["1b43-2-83-105-229.ngrok-free.app"]
 
 
 # Application definition
@@ -91,8 +98,7 @@ WSGI_APPLICATION = 'Voidwomb.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-from dotenv import load_dotenv
-load_dotenv()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

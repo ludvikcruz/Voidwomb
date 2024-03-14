@@ -1,73 +1,55 @@
-# payment/views.py
 from django.shortcuts import redirect
-from django.http import JsonResponse
 import paypalrestsdk
-import environ
+from django.conf import settings
+from django.http import JsonResponse
 
-# Initialise environment variables
-env = environ.Env()
-environ.Env.read_env()
+paypalrestsdk.configure({
+  "mode": settings.PAYPAL_MODE,  # sandbox or live
+  "client_id": settings.PAYPAL_CLIENT_ID,
+  "client_secret": settings.PAYPAL_CLIENT_SECRET })
 
 def create_payment(request):
-    paypalrestsdk.configure({
-        "mode": "sandbox",  # Ou "live" para produção
-        "client_id": env('PAYPAL_CLIENT_ID'),
-        "client_secret": env('PAYPAL_CLIENT_SECRET')
-    })
     payment = paypalrestsdk.Payment({
         "intent": "sale",
         "payer": {
-            "payment_method": "paypal",
-        },
+            "payment_method": "paypal"},
         "redirect_urls": {
-            "return_url": "URL_PARA_ONDE_O_USUARIO_DEVE_SER_REDIRECIONADO_APOS_PAGAMENTO",
-            "cancel_url": "URL_PARA_ONDE_O_USUARIO_DEVE_SER_REDIRECIONADO_SE_CANCELAR_O_PAGAMENTO",
-        },
+            "return_url": "http://localhost:8000/payment/execute/",
+            "cancel_url": "http://localhost:8000/payment/cancel/"},
         "transactions": [{
             "item_list": {
                 "items": [{
-                    "name": "Nome do item",
-                    "sku": "Código SKU",
-                    "price": "Preço unitário",
-                    "currency": "EUR",
-                    "quantity": "Quantidade",
-                }]
-            },
+                    "name": "item",
+                    "sku": "item",
+                    "price": "5.00",
+                    "currency": "USD",
+                    "quantity": 1}]},
             "amount": {
-                "total": "Preço total",
-                "currency": "EUR",
-            },
-            "description": "Descrição da transação",
-        }]
-    })
+                "total": "5.00",
+                "currency": "USD"},
+            "description": "This is the payment transaction description."}]})
 
     if payment.create():
-        # O pagamento foi criado com sucesso
+        print("Payment created successfully")
         for link in payment.links:
             if link.rel == "approval_url":
-                # Redireciona o usuário para o PayPal para aprovação
-                return redirect(link.href)
+                # Capture the approval_url to redirect the user to PayPal for payment approval
+                approval_url = str(link.href)
+                print("Redirect for approval: %s" % (approval_url))
+                return redirect(approval_url)
     else:
-        # Falha na criação do pagamento
         print(payment.error)
-
-    return JsonResponse({'error': 'Erro ao criar o pagamento'})
-
-
-from django.shortcuts import redirect, get_object_or_404
-from .models import Produto
-from .carrinho import add_to_cart
-
-def exibir_carrinho(request):
-    cart = get_cart(request)
-    cart_items = []
-    total = 0
-    for produto_id, quantity in cart.items():
-        produto = get_object_or_404(Produto, id=produto_id)
-        subtotal = produto.preco * quantity
-        total += subtotal
-        cart_items.append({'produto': produto, 'quantity': quantity, 'subtotal': subtotal})
-    
-    return render(request, 'carrinho.html', {'cart_items': cart_items, 'total': total})
+    return JsonResponse({"error": "Payment creation failed"})
 
 
+def execute_payment(request):
+    payment_id = request.GET.get('paymentId')
+    payer_id = request.GET.get('PayerID')
+    payment = paypalrestsdk.Payment.find(payment_id)
+
+    if payment.execute({"payer_id": payer_id}):
+        print("Payment execute successfully")
+        # Aqui você pode adicionar lógica após o sucesso do pagamento, como enviar um e-mail
+    else:
+        print(payment.error)  # Logging the error
+    # Redirecionar para uma página de confirmação/erro conforme necessário

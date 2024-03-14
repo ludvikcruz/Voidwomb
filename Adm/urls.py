@@ -23,6 +23,12 @@ urlpatterns = [
     path('paises/adicionar',views.paises_adicionar,name ='adicionar_paises'),
     path('paises/editar/<int:id>/', views.editar_pais, name='editar_pais'),
     path('paises/excluir/<int:id>/', views.excluir_pais, name='excluir_pais'),
+
+    #paths dos eventos
+    path('eventos/', views.lista_eventos, name='lista_eventos'),
+    path('eventos/add/', views.evento_add, name='evento_add'),
+    path('eventos/edit/<int:pk>/', views.evento_edit, name='evento_edit'),
+    path('eventos/delete/<int:pk>/', views.evento_delete, name='evento_delete'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

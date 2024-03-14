@@ -101,3 +101,7 @@ def produto(request):
 
 def pessoa_encomenda(request):
     return render(request,'store/pessoa_encomenda.html')
+
+
+
+

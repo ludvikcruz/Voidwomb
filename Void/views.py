@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 
 from payment.carrinho import add_to_cart
-from .models import Produto, country
+from .models import Evento, Produto, country
 from django.core.mail import send_mail
 from django.http import HttpResponse
 
@@ -30,7 +30,8 @@ def contact(request):
     return render(request,'contact.html')
 
 def rituals(request):
-    return render(request,'rituals.html')
+    eventos = Evento.objects.all()
+    return render(request,'rituals.html',{'eventos':eventos})
 
 def store(request):
     produtos = Produto.objects.all()

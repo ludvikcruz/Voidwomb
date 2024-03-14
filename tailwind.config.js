@@ -7,6 +7,11 @@ module.exports = {
   ],
   theme: {
     extend: {},
+    fontFamily: {
+      'sans': ['Montserrat', 'Arial', 'sans-serif'],
+      'serif': ['Montserrat', 'Georgia', 'serif'],
+      'mono': ['Montserrat', 'Courier New', 'monospace'],
+    }
   },
   plugins: [
     require('flowbite/plugin')
@@ -56,6 +61,16 @@ tailwind.config = {
     'Segoe UI Symbol', 
     'Noto Color Emoji'
   ]
+    }
+  }
+}
+
+module.exports = {
+  theme: {
+    fontFamily: {
+      'sans': ['Montserrat', 'Arial', 'sans-serif'],
+      'serif': ['Montserrat', 'Georgia', 'serif'],
+      'mono': ['Montserrat', 'Courier New', 'monospace'],
     }
   }
 }

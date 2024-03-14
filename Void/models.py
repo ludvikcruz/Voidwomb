@@ -34,5 +34,11 @@ class Produto(models.Model):
     
 class Tamanho(models.Model):
     pass
+
+class country(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField()
+    acronimo=models.CharField()
+    
 class rituals(models.Model):
     id = models.AutoField(primary_key=True)

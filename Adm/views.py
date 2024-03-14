@@ -1,12 +1,12 @@
 import csv
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
-from Void.models import Produto
+from Void.models import Produto, country
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 import openpyxl
 from django.core.files.base import ContentFile
-from .forms import ProdutoForm,UploadExcelForm 
+from .forms import ProdutoForm,UploadExcelForm, paisesForm 
 from django.contrib.auth import authenticate, login,logout
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -185,3 +185,36 @@ def exportar_produtos_csv(request):
 
     # Retornar a resposta que agora contém o arquivo CSV
     return response
+
+def paises_adicionar(request):
+    if request.method == 'POST':
+        form = paisesForm(request.POST)  # Inclua request.FILES aqui
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('listar_paises'))
+    else:
+        form = paisesForm()
+    return render(request, 'Paises/paisesForm.html', {'form': form})
+
+def listar_paises(request):
+    paises = country.objects.all()
+    return render(request, 'Paises/paisesLista.html', {'paises': paises})
+
+def editar_pais(request, id):
+    pais = get_object_or_404(country, id=id)
+    if request.method == "POST":
+        form = paisesForm(request.POST, instance=pais)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('listar_paises'))
+    else:
+        form = paisesForm(instance=pais)
+    return render(request, 'Paises/paisesForm.html', {'form': form})
+
+# Exclui país
+def excluir_pais(request, id):
+    pais = get_object_or_404(country, id=id)
+    if request.method == "POST":
+        pais.delete()
+        return HttpResponseRedirect(reverse('listar_paises'))
+    return render(request, 'Paises/excluirPais.html', {'pais': pais})

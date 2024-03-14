@@ -1,0 +1,22 @@
+{% extends "_base.html" %}
+{% block conteudo %}
+ 
+<table>
+  <tr>
+    <th>Nome</th>
+    <th>Acrônimo</th>
+    <th>Ações</th>
+  </tr>
+  {% for pais in paises %}
+  <tr>
+    <td>{{ pais.nome }}</td>
+    <td>{{ pais.acronimo }}</td>
+    <td>
+      <a href="{% url 'editar_pais' pais.id %}">Editar</a>
+      <a href="{% url 'excluir_pais' pais.id %}" onclick="return confirm('Tem certeza?');">Excluir</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<a href="{%url 'adicionar_paises'%}">Adicionar</a>
+{% endblock %}

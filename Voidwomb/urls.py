@@ -29,6 +29,7 @@ urlpatterns = [
     path('payment/', include('payment.urls')),
     path('Adm/',include('Adm.urls')),
     path('cart/add/<int:produto_id>/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
+    path('cart/ad/<int:produto_id>/', views.adicionar_dentro_carrinho, name='adicionar_dentro_carrinho'),
     path('cart/delete/<int:produto_id>/', views.remover_do_carrinho, name='remover_do_carrinho'),
     path('cart/',views.carrinho,name='carrinho'),
     path('store/product',views.produto,name='produto'),

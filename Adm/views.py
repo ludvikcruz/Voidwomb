@@ -2,6 +2,7 @@ import csv
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
 from Void.models import Produto
+from django.views.decorators.http import require_POST
 from django.contrib import messages
 import openpyxl
 from django.core.files.base import ContentFile
@@ -81,6 +82,17 @@ def eliminar_produto(request, id):
         produto.delete()
         return redirect('lista_produtos')
     return render(request, 'confirmar_eliminar.html', {'produto': produto})
+
+@require_POST
+def eliminar_selecionados(request):
+    # Obtém a lista de IDs dos produtos selecionados
+    produtos_ids = request.POST.getlist('produto_id')
+    
+    # Elimina os produtos selecionados
+    Produto.objects.filter(id__in=produtos_ids).delete()
+    
+    # Redireciona para a página de listagem de produtos
+    return redirect('lista_produtos')
 
 def upload_excel_view(request):
     if request.method == 'POST':

@@ -22,3 +22,5 @@ class ItemCarrinho(models.Model):
 
     def __str__(self):
         return f"{self.quantidade} de {self.produto.nome}"
+    class Meta:
+        db_table = 'payment_itemcarrinho'

@@ -67,4 +67,4 @@ def carrinho(request):
             'subtotal': subtotal,
         })
 
-    return render(request, 'carrinho.html', {'itens_carrinho': itens_carrinho, 'total': total})
+    return render(request, 'store/dados_encomenda.html', {'itens_carrinho': itens_carrinho, 'total': total})

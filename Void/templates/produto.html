@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+
+<div class="bg-gray-900 text-white">
+
+<div class="container mx-auto px-4 py-12">
+    <div class="flex flex-wrap">
+        <!-- Image gallery -->
+        <div class="w-full md:w-1/2 lg:w-1/3 flex flex-col">
+            <div class="mb-4">
+                <img src="path-to-main-product-image.jpg" alt="Main Product" class="rounded shadow-lg">
+            </div>
+            <div class="flex -mx-2">
+                <div class="flex-1 px-2">
+                    <img src="path-to-thumbnail-image.jpg" alt="Thumbnail" class="rounded shadow-lg">
+                </div>
+                <!-- More thumbnails here -->
+            </div>
+        </div>
+
+        <!-- Product description -->
+        <div class="w-full md:w-1/2 lg:w-2/3 mt-6 lg:mt-0 lg:pl-10">
+            <h2 class="text-3xl font-semibold mb-2">Embroidered Patch Logo + AN Cuneiform (Black, Gold and silver)</h2>
+            <div class="text-xl mb-4">€8,00</div>
+            <div class="mb-4">In stock</div>
+            <div class="flex items-center mb-6">
+                <label for="quantity" class="mr-2">Quantity:</label>
+                <input type="number" id="quantity" name="quantity" min="1" value="1" class="w-16 px-2 py-1 rounded border border-gray-600 bg-gray-800 text-white focus:outline-none">
+            </div>
+            <button class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4">Add to Bag</button>
+
+            <div class="border-t border-gray-700 pt-4">
+                <h3 class="font-semibold mb-2">Product Details</h3>
+                <p>Embroidered Patch with Logo and AN cuneiform</p>
+                <p>Black background</p>
+                <p>An cuneiform gold stitches</p>
+                <p>Logo silver stitches</p>
+            </div>
+
+            <div class="pt-4">
+                <span class="mr-2">Share this product with your friends:</span>
+                <button class="text-blue-600 hover:text-blue-800 mr-2">Share</button>
+                <button class="text-blue-600 hover:text-blue-800 mr-2">Tweet</button>
+                <button class="text-blue-600 hover:text-blue-800 mr-2">Pin it</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+{% endblock content %}

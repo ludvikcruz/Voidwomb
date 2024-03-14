@@ -68,3 +68,5 @@ def carrinho(request):
         })
 
     return render(request, 'carrinho.html', {'itens_carrinho': itens_carrinho, 'total': total})
+
+

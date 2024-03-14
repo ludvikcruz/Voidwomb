@@ -47,7 +47,7 @@ def lista_produtos(request):
 
                 produto.save()
 
-            return redirect('home')
+            return redirect('lista_produtos')
     else:
         form = UploadExcelForm()
     return render(request, 'lista_produtos.html', {'page_obj': page_obj,'form':form})

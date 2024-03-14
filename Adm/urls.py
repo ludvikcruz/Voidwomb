@@ -6,14 +6,16 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('',views.adm,name='admin'),
-    path('produto/adicionar/', views.adicionar_produto, name='adicionar_produto'),
-    path('produto/editar/<int:id>/', views.editar_produto, name='editar_produto'),
-    path('produto/eliminar/<int:id>/', views.eliminar_produto, name='eliminar_produto'),
+    #Paths dos produtos
+    path('produtos/adicionar/', views.adicionar_produto, name='adicionar_produto'),
+    path('produtos/editar/<int:id>/', views.editar_produto, name='editar_produto'),
+    path('produtos/eliminar/<int:id>/', views.eliminar_produto, name='eliminar_produto'),
     path('produtos/', views.lista_produtos, name='lista_produtos'),
-    path('importExcel/', views.upload_excel_view, name='upload_excel'),
-    path('ExportExel/', views.exportar_produtos_csv, name='exportar_produtos'),
+    path('produtos/importExcel/', views.lista_produtos, name='upload_excel'),
+    path('produtos/ExportExel/', views.exportar_produtos_csv, name='exportar_produtos'),
+    
+    #Paths dos users
     path('users/login',views.login_view,name ='login'),
-    path('users/register',views.register_view,name ='register'),
     path('users/logout',views.logout_view,name ='logout'),
 ]
 if settings.DEBUG:

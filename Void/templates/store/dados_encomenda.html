@@ -17,28 +17,31 @@
           <h3 class="font-semibold text-gray-600 text-xs uppercase w-1/5 text-center">Price</h3>
           <h3 class="font-semibold text-gray-600 text-xs uppercase w-1/5 text-center">Total</h3>
         </div>
+        {% for product in itens_carrinho %}
         <!-- Product 1 -->
         <div class="flex items-center hover:bg-gray-100 -mx-8 px-6 py-5">
           <div class="flex w-2/5">
             <!-- product image -->
             <div class="w-20">
-              <img class="h-24" src="../static/src/img/CD-AOCD.jpg" alt="product image">
+              <img class="h-24" src="{{product.produto.imagem.url}}" alt="product image">
             </div>
             <div class="flex flex-col justify-between ml-4 flex-grow">
               <span class="font-bold text-sm">Product Name</span>
-              <span class="text-red-500 text-xs">Gallas CD Digipack Reissue with booklet and bonus track</span>
-              <a href="#" class="font-semibold hover:text-red-500 text-gray-500 text-xs">Remove</a>
+              <span class="text-red-500 text-xs">{{product.produto}}</span>
+              <a href="{%url 'remover_do_carrinho' product.produto_id %}" class="font-semibold hover:text-red-500 text-gray-500 text-xs">Remove</a>
             </div>
           </div>
           <div class="flex justify-center w-1/5">
             <!-- Quantity adjustment -->
-            <input class="mx-2 border text-center w-8" type="text" value="1">
+            <input class="mx-2 border text-center w-8" disabled value="{{product.quantidade}}">
+            
           </div>
-          <span class="text-center w-1/5 font-semibold text-sm">€13.00</span>
+          <span class="text-center w-1/5 font-semibold text-sm">{{product.subtotal}}</span>
         </div>
+        {% endfor %}
         <!-- Product 2 and more products would go here -->
         <!-- ... -->
-        <a href="../templates/store.html" class="flex font-semibold text-indigo-600 text-sm mt-10">
+        <a href="{%url 'store'%}" class="flex font-semibold text-indigo-600 text-sm mt-10">
           <svg class="fill-current mr-2 text-indigo-600 w-4" viewBox="0 0 448 512"><path d="..."></path></svg>
           Continue Shopping
         </a>
@@ -48,8 +51,8 @@
       <div class="w-1/4 px-8 py-10">
         <h1 class="font-semibold text-2xl border-b pb-8">Checkout</h1>
         <div class="flex justify-between mt-10 mb-5">
-          <span class="font-semibold text-sm uppercase">Items 3</span>
-          <span class="font-semibold text-sm">€35.05</span>
+          <span class="font-semibold text-sm uppercase">{{ cart_items_count }} Itens</span>
+          <span class="font-semibold text-sm">{{total}}€</span>
         </div>
         <div>
           <label class="font-medium inline-block mb-3 text-sm uppercase">Shipping</label>

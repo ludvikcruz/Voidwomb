@@ -53,6 +53,19 @@ def adicionar_ao_carrinho(request, produto_id):
     request.session['carrinho'] = cart
     return redirect('store')
 
+def remover_do_carrinho(request, produto_id):
+    cart = request.session.get('carrinho', {})
+
+    product_id_str = str(produto_id)  # Certifique-se de que o ID seja uma string para evitar problemas de chave em dicionários.
+    if product_id_str in cart:
+        if cart[product_id_str] > 1:
+            cart[product_id_str] -= 1  # Decrementa a quantidade do item
+        else:
+            del cart[product_id_str]  # Remove o item do carrinho se a quantidade for 1 ou menos
+
+    request.session['carrinho'] = cart
+    return redirect('carrinho')
+
 def carrinho(request):
     carrinho = request.session.get('carrinho', {})
     itens_carrinho = []
@@ -62,6 +75,7 @@ def carrinho(request):
         subtotal = produto.preco * quantidade
         total += subtotal
         itens_carrinho.append({
+            'produto_id':produto.id,
             'produto': produto,
             'quantidade': quantidade,
             'subtotal': subtotal,

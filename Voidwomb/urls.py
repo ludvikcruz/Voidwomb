@@ -29,7 +29,6 @@ urlpatterns = [
     path('payment/', include('payment.urls')),
     path('Adm/',include('Adm.urls')),
     path('cart/add/<int:produto_id>/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
-    path('cart/checkout',views.dados_de_envomenda,name ='dados'),
     path('cart/',views.carrinho,name='carrinho'),
 ]
 if settings.DEBUG:

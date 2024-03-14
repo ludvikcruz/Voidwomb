@@ -1,0 +1,19 @@
+<!-- eventos/lista.html -->
+{% extends '_base.html' %}
+{% block conteudo %}
+<h1>Lista de Eventos</h1>
+<div>
+    <a href="{% url 'evento_add' %}">adicionar</a>
+    {% for evento in eventos %}
+    <div>
+        <h2>{{ evento.titulo }}</h2>
+        <p>{{ evento.data }}</p>
+        <p>{{ evento.localizacao }}</p>
+        <p><a href="{{ evento.hiperligacao }}">Link</a></p>
+        <p><img src="{{ evento.foto.url }}" alt="{{ evento.titulo }}" height="100"></p>
+        <p><a href="{% url 'evento_edit' evento.id %}">Editar</a></p>
+        <p><a href="{% url 'evento_delete' evento.id %}">Deletar</a></p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

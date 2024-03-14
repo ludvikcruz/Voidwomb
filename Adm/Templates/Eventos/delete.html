@@ -1,0 +1,12 @@
+<!-- eventos/delete.html -->
+{% extends '_base.html' %}
+{% block conteudo %}
+<div class="max-w-xl mx-auto my-10 p-5 border rounded-lg shadow-lg">
+    <h2 class="text-xl font-bold mb-4">Tem certeza que deseja deletar "{{ evento.titulo }}"?</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700">Deletar</button>
+        <a href="{% url 'lista_eventos' %}" class="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

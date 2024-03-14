@@ -1,12 +1,12 @@
 import csv
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
-from Void.models import Produto, country
+from Void.models import Evento, Produto, country
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 import openpyxl
 from django.core.files.base import ContentFile
-from .forms import ProdutoForm,UploadExcelForm, paisesForm 
+from .forms import EventoForm, ProdutoForm,UploadExcelForm, paisesForm 
 from django.contrib.auth import authenticate, login,logout
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -218,3 +218,38 @@ def excluir_pais(request, id):
         pais.delete()
         return HttpResponseRedirect(reverse('listar_paises'))
     return render(request, 'Paises/excluirPais.html', {'pais': pais})
+
+
+
+
+def lista_eventos(request):
+    eventos = Evento.objects.all()
+    return render(request, 'eventos/lista_eventos.html', {'eventos': eventos})
+
+def evento_add(request):
+    if request.method == "POST":
+        form = EventoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('lista_eventos'))
+    else:
+        form = EventoForm()
+    return render(request, 'Eventos/form.html', {'form': form})
+
+def evento_edit(request, pk):
+    evento = get_object_or_404(Evento, pk=pk)
+    if request.method == "POST":
+        form = EventoForm(request.POST, request.FILES, instance=evento)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('lista_eventos'))
+    else:
+        form = EventoForm(instance=evento)
+    return render(request, 'Eventos/form.html', {'form': form})
+
+def evento_delete(request, pk):
+    evento = get_object_or_404(Evento, pk=pk)
+    if request.method == "POST":
+        evento.delete()
+        return HttpResponseRedirect(reverse('lista_eventos'))
+    return render(request, 'Eventos/delete.html', {'evento': evento})

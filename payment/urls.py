@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('create/', views.create_payment, name='create_payment'),
     path('execute/', views.execute_payment, name='execute_payment'),
+    path('cancel/', views.payment_cancelled, name='cancel_payment'),
 
 ]
 if settings.DEBUG:

@@ -8,27 +8,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-
     <title>Voidwomb</title>
-
     {% compress css %}
     <link rel="stylesheet" href="{% static 'src/css/output.css' %}">
     {% endcompress %}
-
+    <style>
+        .background-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url('{% static "src/img/Voidwomb-foto.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(8px);
+        }
+        .content-container {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
 </head>
 
-<body >
-    {%include 'nav_footer/nav.html'%}
+<body>
+    <div class="background-blur"></div><!-- Div com o background desfocado -->
+    {% include 'nav_footer/nav.html' %}
    
-    <div class="container relative mx-auto mt-4">
-        <div class="absolute top-0 w-full h-screen z-0 overflow-hidden">
-            <img src="static/src/img/Voidwomb-foto.jpg" alt="Background" class="w-full h-full object-cover fixed top-0 left-0" style="margin: 0; padding: 0; border: none; filter: blur(8px);">
-        </div>
+    <div class="container mx-auto mt-4 content-container">
         {% block content %}
-
-        {% endblock content %}       
+        {% endblock content %}
     </div>
-    {%include 'nav_footer/footer.html'%}
+
+    {% include 'nav_footer/footer.html' %}
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </html>

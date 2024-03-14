@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
+{% load static %}
+
 <form action="{% url 'contact' %}" method="post">
     {% csrf_token %}
     <section class="dark:bg-gray-900">
@@ -25,5 +27,6 @@
         </div>
       </section>
 </form>
+
 {% endblock content %}
 

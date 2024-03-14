@@ -7,6 +7,14 @@ class Produto(models.Model):
         ('roupa', 'Roupa'),
         ('vinil', 'Vinil'),
     ]
+    TAMANHOS = [
+        ('xs', 'XS'),
+        ('s', 'S'),
+        ('m', 'M'),
+        ('l', 'L'),
+        ('xl', 'XL'),
+        ('XXl', 'XXL'),
+    ]
 
     id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=255)
@@ -16,11 +24,15 @@ class Produto(models.Model):
     sku = models.CharField(max_length=100)
     categoria = models.CharField(max_length=50, choices=CATEGORIAS, blank=True, null=True)
     cor = models.CharField(max_length=50, blank=True, null=True)
-    tamanho = models.CharField(max_length=50, blank=True, null=True)
+    tamanho = models.CharField(max_length=50,choices=TAMANHOS, blank=True, null=True)
     imagem = models.ImageField(upload_to='produtos_imagens/', blank=True, null=True ,default='produtos_imagens/Tshirt-AOCD.jpg')
     vendas = models.IntegerField(default=0)
+    
     def __str__(self):
         return self.nome
     
+    
+class Tamanho(models.Model):
+    pass
 class rituals(models.Model):
     id = models.AutoField(primary_key=True)

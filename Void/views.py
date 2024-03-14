@@ -85,3 +85,6 @@ def carrinho(request):
 
 def produto(request):
     return render(request,'produto.html')
+
+def pessoa_encomenda(request):
+    return render(request,'store/pessoa_encomenda.html')

@@ -68,3 +68,6 @@ def carrinho(request):
         })
 
     return render(request, 'store/dados_encomenda.html', {'itens_carrinho': itens_carrinho, 'total': total})
+
+def produto(request):
+    return render(request,'produto.html')

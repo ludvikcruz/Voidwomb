@@ -1,7 +1,36 @@
 {% extends "base.html" %}
 {% block content %}
 {% load static %}
-
+<style>
+    #textarea-container {
+        overflow: hidden; /* Esconde a barra de rolagem */
+        max-height: 400px; /* Altura máxima do container */
+      }
+      
+      #message {
+        width: 100%;
+        height: 100%;
+        min-height: 400px; /* Mínimo da altura que você quer mostrar */
+        overflow-y: scroll; /* Permite a rolagem */
+        border: none; /* Remove a borda se não quiser */
+        resize: none; /* Impede o redimensionamento manual */
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white; /* Cor do texto */
+        padding: 1rem; /* Espaçamento interno */
+        box-sizing: border-box; /* Para incluir o padding no cálculo da largura */
+      }
+      
+      /* Para navegadores WebKit como Safari e Chrome */
+      #message::-webkit-scrollbar {
+        display: none; /* Esconde as barras de rolagem */
+      }
+      
+      /* Para Internet Explorer, Edge e Firefox */
+      #message {
+        scrollbar-width: none; /* Para o Firefox */
+        -ms-overflow-style: none; /* Para Internet Explorer e Edge */
+      }
+</style>
 <div class="text-white flex h-screen" style="background-color: rgba(0, 0, 0, 0.5);">
     <!-- Image section on the left -->
     <div class="w-1/2 flex justify-center items-center border-r border-gray-700">
@@ -14,10 +43,12 @@
             <button onclick="history.back()" class="text-white font-bold py-2 px-4 rounded border border-white hover:border-gray-400 hover:text-gray-400 transition ease-in-out duration-150 mb-4">
                 Go back to store
             </button>
-            <h2 class="text-3xl font-semibold mb-2">Embroidered Patch Logo + AN Cuneiform (Black, Gold and silver)</h2>
-            <div class="text-xl mb-4">€8,00</div>
+            <h2 class="text-3xl font-semibold mb-2">{{produto.nome}}</h2>
+            <div class="text-xl mb-4">{{produto.preco}}</div>
+            {% if produto.stock >= 1 %}
             <div class="mb-4">In stock</div>
-
+            {% endif %}
+            {% if produto.categoria == "Roupa" %}
             <!-- Size selection dropdown -->
             <div class="mb-6 w-20">
                 <label for="size-select" class="block mb-2">Size:</label>
@@ -30,21 +61,20 @@
                     <option value="x-large">XXL</option>
                 </select>
             </div>
-
-            <div class="flex items-center mb-6">
+            {% endif %}
+            <form action="{% url 'adicionar_dentro_carrinho' produto.id %}" method="post" class="space-y-4">
+            {% csrf_token %}
+                <div class="flex items-center mb-6">
                 <label for="quantity" class="mr-2">Quantity:</label>
                 <input type="number" id="quantity" name="quantity" min="1" value="1" class="w-16 px-2 py-1 rounded border border-gray-600 bg-gray-800 text-white focus:outline-none">
             </div>
-            <button class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4">Add to Bag</button>
-            <div class="border-t border-gray-700 pt-4">
+                <button type='submit' class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mb-4">Add to Bag</button>
+            </form>
+            <div id= 'textarea_container 'class="border-t border-gray-700 pt-4">
                 <h3 class="font-semibold mb-2">Product Details</h3>
-                <p>Embroidered Patch with Logo and AN cuneiform</p>
-                <p>Black background</p>
-                <p>An cuneiform gold stitches</p>
-                <p>Logo silver stitches</p>
+                <textarea id="message" rows="6"  style="background-color: rgba(0, 0, 0, 0.5); overflow-y: scroll;resize: none;" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg focus:ring-blue-500 focus:border-blue-500 border-transparent text-white" disabled>{{produto.descricao}}</textarea>
             </div>
         </div>
     </div>
 </div>
-
 {% endblock content %}

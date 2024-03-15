@@ -14,6 +14,8 @@ urlpatterns = [
     path('produtos/importExcel/', views.lista_produtos, name='upload_excel'),
     path('produtos/ExportExel/', views.exportar_produtos_csv, name='exportar_produtos'),
     path('caminho/para/eliminar/produtos/selecionados/', views.eliminar_selecionados, name='eliminar_produtos_selecionados'),
+    
+    
     #Paths dos users
     path('users/login',views.login_view,name ='login'),
     path('users/logout',views.logout_view,name ='logout'),

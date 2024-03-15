@@ -8,37 +8,37 @@
             <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
                 <div class="sm:col-span-2">
                     <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Título</label>
-                    {{form.nome}}    
+                    {{produto_form.nome}}    
                 </div>
                 <div class="w-full">
                     <label for="brand" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">SKU</label>
-                    {{form.sku}}
+                    {{produto_form.sku}}
                 </div>
                 <div class="w-full">
                     <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Preço</label>
-                    {{form.preco}}
+                    {{produto_form.preco}}
                 </div>
                 <div>
                     <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Categoria</label>
-                    {{form.categoria}}
+                    {{produto_form.categoria}}
                 </div>
                 <div>
                     <label for="item-weight" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Stock</label>
-                    {{form.stock}}
+                    {{produto_form.stock}}
                 </div> 
                 
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="file_input">Upload file</label>
-                    {{form.imagem}}
+                    {{produto_form.imagem}}
                 </div>
                 
                 <div class="sm:col-span-2">
                     <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Description</label>
-                    {{form.descricao}}
+                    {{produto_form.descricao}}
                 </div>
                 <div class="sm:col-span-2">
                     <label for="Tamanho" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tamanho</label>
-                    {{form.tamanho}}
+                    {{produto_form.tamanho}}
                 </div>
             </div>
             <button type="submit" class="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-black bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800">
@@ -47,4 +47,11 @@
         </form>
     </div>
   </section>
+  <h3>Tamanhos e Estoques</h3>
+  {% for form in tamanho_forms %}
+  {{ form.as_p }}
+  <p>Formulário renderizado</p>
+  {% empty %}
+  <p>Nenhum formulário de tamanho encontrado.</p>
+{% endfor %}
   {% endblock conteudo %}

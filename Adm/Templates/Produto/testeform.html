@@ -1,0 +1,10 @@
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <h3>Tamanhos e Estoques</h3>
+    {{ formset.management_form }}  <!-- Essencial para formsets -->
+    {% for form in formset %}
+        {{ form.as_p }}
+    {% endfor %}
+    <button type="submit">Salvar</button>
+</form>

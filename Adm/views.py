@@ -1,12 +1,13 @@
 import csv
+from django.forms import inlineformset_factory
 from django.shortcuts import render
 from django.shortcuts import render, redirect, get_object_or_404
-from Void.models import Evento, Produto, country
+from Void.models import Evento, Produto, ProdutoTamanho, country
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 import openpyxl
 from django.core.files.base import ContentFile
-from .forms import EventoForm, ProdutoForm,UploadExcelForm, paisesForm 
+from .forms import EventoForm, ProdutoForm, ProdutoTamanhoForm,UploadExcelForm, paisesForm 
 from django.contrib.auth import authenticate, login,logout
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -14,18 +15,26 @@ from django.core.paginator import Paginator
 
 
 def lista_produtos(request):
+    
     produtos_list = Produto.objects.all()
-    paginator = Paginator(produtos_list, 10) # Mostra 10 produtos por página
+    
+    paginator = Paginator(produtos_list, 10)# Mostra 10 produtos por página
+    
     page_number = request.GET.get('page')
+    
     page_obj = paginator.get_page(page_number)
+    
     if request.method == 'POST':
+        
         form = UploadExcelForm(request.POST, request.FILES)
+        
         if form.is_valid():
             excel_file = request.FILES['excel_file']
             wb = openpyxl.load_workbook(filename=ContentFile(excel_file.read()))
             sheet = wb.active
 
             for row in sheet.iter_rows(min_row=2, values_only=True):
+                
                 produto = Produto(
                     nome=row[0],
                     descricao=row[1],
@@ -51,37 +60,72 @@ def lista_produtos(request):
             return redirect('lista_produtos')
     else:
         form = UploadExcelForm()
-    return render(request, 'lista_produtos.html', {'page_obj': page_obj,'form':form})
+    return render(request, 'Produto/lista_produtos.html', {'page_obj': page_obj,'form':form})
 
 
 
-def adicionar_produto(request):
+def adicionar_produto(request,produto_id=None):
+    if produto_id:
+        produto = Produto.objects.get(id=produto_id)
+        tamanhos = ProdutoTamanho.objects.filter(produto=produto)
+    else:
+        produto = Produto()
+        tamanhos=[]
     if request.method == 'POST':
         form = ProdutoForm(request.POST, request.FILES)  # Inclua request.FILES aqui
         if form.is_valid():
             form.save()
             return redirect('lista_produtos')
     else:
-        form = ProdutoForm()
-    return render(request, 'form_produto.html', {'form': form})
+        produto_form = ProdutoForm()
+        tamanho_forms = [ProdutoTamanhoForm()]  # Exemplo com formulários predefinidos
+  # Lista de formulários de tamanho
+
+    return render(request, 'Produto/form_produto.html', 
+        {
+        'produto_form': produto_form,
+        'tamanho_forms': tamanho_forms,
+        })
+
+# def editar_produto(request, id):
+#     produto = get_object_or_404(Produto, id=id)
+#     if request.method == 'POST':
+#         form = ProdutoForm(request.POST, request.FILES, instance=produto)  # Inclua request.FILES aqui
+#         if form.is_valid():
+#             form.save()
+#             return redirect('lista_produtos')
+#     else:
+#         form = ProdutoForm(instance=produto)
+#     return render(request, 'Produto/form_produto.html', {'form': form})
+
 
 def editar_produto(request, id):
-    produto = get_object_or_404(Produto, id=id)
+    ProdutoTamanhoFormSet = inlineformset_factory(Produto, ProdutoTamanho, form=ProdutoTamanhoForm, extra=0, can_delete=True)
+    produto = get_object_or_404(Produto, pk=id)
+    form = ProdutoForm(instance=produto)
+    formset = ProdutoTamanhoFormSet(instance=produto)
+
     if request.method == 'POST':
-        form = ProdutoForm(request.POST, request.FILES, instance=produto)  # Inclua request.FILES aqui
-        if form.is_valid():
+        form = ProdutoForm(request.POST, request.FILES, instance=produto)
+        formset = ProdutoTamanhoFormSet(request.POST, instance=produto)
+        
+        if form.is_valid() and formset.is_valid():
             form.save()
-            return redirect('lista_produtos')
-    else:
-        form = ProdutoForm(instance=produto)
-    return render(request, 'form_produto.html', {'form': form})
+            formset.save()
+            return redirect('lista_produtos')  # Substitua 'lista_produtos' pela sua URL de redirecionamento
+
+    return render(request, 'Produto/testeform.html', {
+        'form': form,
+        'formset': formset,
+        'produto_id': id  # Passar o ID pode ser útil para o template
+    })
 
 def eliminar_produto(request, id):
     produto = get_object_or_404(Produto, id=id)
     if request.method == "POST":
         produto.delete()
         return redirect('lista_produtos')
-    return render(request, 'confirmar_eliminar.html', {'produto': produto})
+    return render(request, 'Produto/confirmar_eliminar.html', {'produto': produto})
 
 @require_POST
 def eliminar_selecionados(request):
@@ -93,42 +137,6 @@ def eliminar_selecionados(request):
     
     # Redireciona para a página de listagem de produtos
     return redirect('lista_produtos')
-
-def upload_excel_view(request):
-    if request.method == 'POST':
-        form = UploadExcelForm(request.POST, request.FILES)
-        if form.is_valid():
-            excel_file = request.FILES['excel_file']
-            wb = openpyxl.load_workbook(filename=ContentFile(excel_file.read()))
-            sheet = wb.active
-
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                produto = Produto(
-                    nome=row[0],
-                    descricao=row[1],
-                    preco=row[2],
-                    stock=row[3],
-                    sku=row[4],
-                    categoria=row[5],
-                    cor=row[6],
-                    tamanho=row[7],
-                )
-
-                imagem_url = row[8] if len(row) > 9 else None# Ajuste o índice conforme a sua planilha
-                if imagem_url:
-                    try:
-                        response = request.get(imagem_url)
-                        img_temp = ContentFile(response.content)
-                        produto.imagem.save(f"{row[5]}_image.jpg", img_temp)
-                    except Exception as e:
-                        print(f"Erro ao baixar a imagem de {imagem_url}: {e}")
-
-                produto.save()
-
-            return redirect('home')
-    else:
-        form = UploadExcelForm()
-    return render (request,'exelform.html', {'form': form})
 
 
 def login_view(request):
@@ -154,8 +162,6 @@ def login_view(request):
         # Método GET, renderize o formulário de login.
     return render(request, 'login.html')
     
-def register_view():
-    pass
 
 def adm(request):
     

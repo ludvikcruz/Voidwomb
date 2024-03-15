@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import get_object_or_404, render,redirect
 
 from payment.carrinho import add_to_cart
 from .models import Evento, Produto, country
@@ -56,15 +56,18 @@ def adicionar_ao_carrinho(request, produto_id):
 
 def adicionar_dentro_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
+    if request.method == 'POST':
+        product_id_str = str(produto_id)  # Convert product ID to string to use as a dictionary key.
+        quantity = int(request.POST.get('quantity'))  # Get quantity from request, default to 1 if not provided.
 
-    product_id_str = str(produto_id)  # Certifique-se de que o ID seja uma string para evitar problemas de chave em dicionários.
-    if product_id_str in cart:
-        cart[product_id_str] += 1
-    else:
-        cart[product_id_str] = 1
+        if product_id_str in cart:
+            cart[product_id_str] += quantity
+        else:
+            cart[product_id_str] = quantity
 
-    request.session['carrinho'] = cart
-    return redirect('carrinho')
+        request.session['carrinho'] = cart  # Update the session with the new cart state.
+        return redirect('carrinho')
+
 
 def remover_do_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
@@ -97,8 +100,13 @@ def carrinho(request):
 
     return render(request, 'store/dados_encomenda.html', {'itens_carrinho': itens_carrinho, 'total': total,'countrys':countrys})
 
-def produto(request):
-    return render(request,'produto.html')
+def produto(request, produto_id):
+    # Utiliza get_object_or_404 para tentar obter o produto correspondente ao ID.
+    # Caso não exista, retorna uma página 404 automaticamente.
+    produto = get_object_or_404(Produto, id=produto_id)
+    
+    # Passa o produto obtido para o template.
+    return render(request, 'produto.html', {'produto': produto})
 
 def pessoa_encomenda(request):
     return render(request,'store/pessoa_encomenda.html')

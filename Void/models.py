@@ -69,3 +69,18 @@ class Evento(models.Model):
 
     def __str__(self):
         return self.titulo
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # Chama o método save original para salvar o objeto
+
+        if self.imagem:  # Verifica se uma imagem foi enviada
+            img = Image.open(self.imagem.path)  # Abre a imagem usando Pillow
+
+            # Define o tamanho máximo desejado (por exemplo, 800x800)
+            max_size = (800, 800)
+
+            # Redimensiona a imagem, preservando a proporção
+            img.thumbnail(max_size, Image.ANTIALIAS)
+
+            # Salva a imagem redimensionada, substituindo a original
+            img.save(self.imagem.path)
+            

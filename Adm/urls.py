@@ -23,6 +23,7 @@ urlpatterns = [
     path('paises/adicionar',views.paises_adicionar,name ='adicionar_paises'),
     path('paises/editar/<int:id>/', views.editar_pais, name='editar_pais'),
     path('paises/excluir/<int:id>/', views.excluir_pais, name='excluir_pais'),
+    path('paises/import-countries/', views.listar_paises, name='import_countries'),
 
     #paths dos eventos
     path('eventos/', views.lista_eventos, name='lista_eventos'),

@@ -198,6 +198,22 @@ def paises_adicionar(request):
 
 def listar_paises(request):
     paises = country.objects.all()
+    if request.method == 'POST':
+        excel_file = request.FILES["excel_file"]
+        
+        # Usa a biblioteca openpyxl para abrir o arquivo Excel
+        wb = openpyxl.load_workbook(excel_file)
+        # Seleciona a primeira planilha do arquivo
+        worksheet = wb["Sheet1"]
+        
+        # Itera sobre as linhas da planilha
+        for row in worksheet.iter_rows(min_row=2, values_only=True):
+            _, created = country.objects.update_or_create(
+                name=row[0],
+                acronimo=row[1],
+                shipping=row[2],
+            )
+        return HttpResponseRedirect(reverse('lista_paises'))
     return render(request, 'Paises/paisesLista.html', {'paises': paises})
 
 def editar_pais(request, id):

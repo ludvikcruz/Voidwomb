@@ -39,6 +39,7 @@ class country(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField()
     acronimo=models.CharField()
+    shipping = models.FloatField(default = 6.5)
     
 
 class Evento(models.Model):

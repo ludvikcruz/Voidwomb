@@ -137,7 +137,29 @@
 </div>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    // JavaScript for handling the shipping changes and calculating totals
+    const countrySelector = document.getElementById('country-selector');
+    const totalElement = document.getElementById('total'); // Supondo que você tenha um elemento com ID 'total'
+    const totalBase = parseFloat(totalElement.textContent); // Supondo que 'totalElement' contenha apenas o número
+  
+    countrySelector.addEventListener('change', function() {
+      let shippingCost;
+      switch (this.value) {
+        case 'PT':
+          shippingCost = 2.5;
+          break;
+        case 'US':
+          shippingCost = 5.7;
+          break;
+        default:
+          shippingCost = 6.5;
+      }
+  
+      // Calcula o novo total
+      const newTotal = totalBase + shippingCost;
+  
+      // Atualiza o total na página
+      document.getElementById('total_com_envio').textContent = `${newTotal.toFixed(2)}€`;
+    });
   });
-</script>
+  </script>
 {% endblock %}

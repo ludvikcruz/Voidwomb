@@ -1,6 +1,11 @@
 {% extends "_base.html" %}
 {% block conteudo %}
- 
+<form method="POST" enctype="multipart/form-data">
+  <h2>Import Excel</h2>
+  {% csrf_token %}
+  <input type="file" name="excel_file">
+  <button type="submit">Upload</button>
+</form>
 <table>
   <tr>
     <th>Nome</th>

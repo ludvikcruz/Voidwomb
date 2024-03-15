@@ -2,16 +2,11 @@
 {% block content %}
 {% load static %}
 
-
-
-
-
-
 <div class="grid gap-4">
     <div class="flex justify-center items-center">
-        <img class="h-auto w-1/2 rounded-lg" src="../static/src/img/MSR_4999.jpg" alt="">
+        <img id="mainImage" class="h-auto w-1/2 rounded-lg" src="../static/src/img/MSR_4999.jpg" alt="">
     </div>
-    <div class="grid grid-cols-5 gap-4">
+    <div class="grid grid-cols-5 gap-4 ml-4 mr-4" id="imageGrid">
         <div>
             <img class="h-auto max-w-full rounded-lg" src="../static/src/img/MSR_4961.jpg" alt="">
         </div>
@@ -27,23 +22,31 @@
         <div>
             <img class="h-auto max-w-full rounded-lg" src="../static/src/img/MSR_4968.jpg" alt="">
         </div>
-        <div>
-            <img class="h-auto max-w-full rounded-lg" src="../static/src/img/Voidwomb-foto.jpg" alt="">
-        </div>
-        <div>
-            <img class="h-auto max-w-full rounded-lg" src="../static/src/img/Voidwomb-band-signing.jpg" alt="">
-        </div>
-        <div>
-            <img class="h-auto max-w-full rounded-lg" src="../static/src/img/MSR_5009.jpg" alt="">
-        </div>
-        <div>
-            <img class="h-auto max-w-full rounded-lg mt-5" src="../static/src/img/Voidwomb Logo.jpg" alt="">
-        </div>
-        <div>
-            <img class="h-auto max-w-full rounded-lg " src="../static/src/img/simbolo.jpg" alt="">
+        <div class="grid grid-cols-3 gap-4">
+            <div>
+                <img class="h-auto max-w-full rounded-lg" src="../static/src/img/Voidwomb-foto.jpg" alt="">
+            </div>
+            <div>
+                <img class="h-auto max-w-full rounded-lg" src="../static/src/img/Voidwomb-band-signing.jpg" alt="">
+            </div>
+            <div>
+                <img class="h-auto max-w-full rounded-lg mt-5" src="../static/src/img/Voidwomb Logo.jpg" alt="">
+            </div>
         </div>
     </div>
 </div>
 
-{% endblock content %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const mainImage = document.getElementById("mainImage");
+        const images = document.querySelectorAll("#imageGrid img");
+        images.forEach(function (image) {
+            image.addEventListener("click", function () {
+                // Move a imagem clicada para a imagem principal
+                mainImage.src = image.src; 
+            });
+        });
+    });
+</script>
 
+{% endblock content %}

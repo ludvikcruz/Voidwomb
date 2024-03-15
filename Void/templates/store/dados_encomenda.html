@@ -90,23 +90,26 @@
         <!-- Customer Information -->
         <div>
           <label for="customer-name" class="text-white font-medium inline-block mb-3 text-sm uppercase">Name</label>
-          <input type="text" id="customer-name" placeholder="Your Name" class="p-2 text-sm w-full">
+          <input required type="text" id="customer-name" placeholder="Your Name" class="p-2 text-sm w-full">
+
+          <label for="email" class="text-white font-medium inline-block mb-3 text-sm">E-mail</label>
+          <input required type="email" id="email" placeholder="Your E-mail" class="p-2 text-sm w-full">
 
           <label for="address" class="text-white font-medium inline-block mb-3 text-sm uppercase mt-4">Address</label>
-          <input type="text" id="address" placeholder="Your Address" class="p-2 text-sm w-full">
+          <input required type="text" id="address" placeholder="Your Address" class="p-2 text-sm w-full">
           
           <label for="postal-code" class="text-white font-medium inline-block mb-3 text-sm uppercase mt-4">Postal Code</label>
-          <input type="text" id="postal-code" placeholder="Your Postal Code" class="p-2 text-sm w-full">
+          <input required type="text" id="postal-code" placeholder="Your Postal Code" class="p-2 text-sm w-full">
           
           <label for="city" class="text-white font-medium inline-block mb-3 text-sm uppercase mt-4">City</label>
-          <input type="text" id="city" placeholder="Your City" class="p-2 text-sm w-full">
+          <input required type="text" id="city" placeholder="Your City" class="p-2 text-sm w-full">
         </div>
 
         <!-- Shipping section -->
         <div class="mt-4 text-white">
           <label class="text-white font-medium inline-block mb-3 text-sm uppercase">Shipping</label>
           <select id="country-selector" class="text-black block p-2 text-gray-600 w-full text-sm">
-            <option selected disabled>Select your country</option>
+            <option required selected disabled>Select your country</option>
             {% for country in countrys %}
             <option value="{{country.acronimo}}">{{country.name}}</option>
             {% endfor %}

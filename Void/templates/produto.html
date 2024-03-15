@@ -46,7 +46,7 @@
             <h2 class="text-3xl font-semibold mb-2">{{produto.nome}}</h2>
             <div class="text-xl mb-4">{{produto.preco}}</div>
             {% if produto.stock >= 1 %}
-            <div class="mb-4">In stock</div>
+            <div class="mb-4">In stock {{produto.stock}}</div>
             {% endif %}
             {% if produto.categoria == "roupa" %}
             <!-- Size selection dropdown -->

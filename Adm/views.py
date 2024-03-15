@@ -14,15 +14,18 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 
 
-def lista_produtos(request):
+def lista_produtos_tamanhos(request):
     
     produtos_list = Produto.objects.all()
     
-    paginator = Paginator(produtos_list, 10)# Mostra 10 produtos por página
+    tamanhos_list = ProdutoTamanho.objects.all()
     
-    page_number = request.GET.get('page')
     
-    page_obj = paginator.get_page(page_number)
+    paginator_produtos = Paginator(produtos_list, 10)# Mostra 10 produtos por página
+    
+    page_number_produtos = request.GET.get('page')
+    
+    page_obj_produtos = paginator_produtos.get_page(page_number_produtos)
     
     if request.method == 'POST':
         
@@ -60,65 +63,32 @@ def lista_produtos(request):
             return redirect('lista_produtos')
     else:
         form = UploadExcelForm()
-    return render(request, 'Produto/lista_produtos.html', {'page_obj': page_obj,'form':form})
+    return render(request, 'Produto/lista_produtos.html', {'page_obj': page_obj_produtos,'form':form,'tamanhos': tamanhos_list})
 
 
 
-def adicionar_produto(request,produto_id=None):
-    if produto_id:
-        produto = Produto.objects.get(id=produto_id)
-        tamanhos = ProdutoTamanho.objects.filter(produto=produto)
-    else:
-        produto = Produto()
-        tamanhos=[]
+def adicionar_produto(request):
     if request.method == 'POST':
         form = ProdutoForm(request.POST, request.FILES)  # Inclua request.FILES aqui
         if form.is_valid():
             form.save()
             return redirect('lista_produtos')
     else:
-        produto_form = ProdutoForm()
-        tamanho_forms = [ProdutoTamanhoForm()]  # Exemplo com formulários predefinidos
-  # Lista de formulários de tamanho
+        form = ProdutoForm()
+    return render(request, 'form_produto.html', {'form': form})
 
-    return render(request, 'Produto/form_produto.html', 
-        {
-        'produto_form': produto_form,
-        'tamanho_forms': tamanho_forms,
-        })
-
-# def editar_produto(request, id):
-#     produto = get_object_or_404(Produto, id=id)
-#     if request.method == 'POST':
-#         form = ProdutoForm(request.POST, request.FILES, instance=produto)  # Inclua request.FILES aqui
-#         if form.is_valid():
-#             form.save()
-#             return redirect('lista_produtos')
-#     else:
-#         form = ProdutoForm(instance=produto)
-#     return render(request, 'Produto/form_produto.html', {'form': form})
 
 
 def editar_produto(request, id):
-    ProdutoTamanhoFormSet = inlineformset_factory(Produto, ProdutoTamanho, form=ProdutoTamanhoForm, extra=0, can_delete=True)
-    produto = get_object_or_404(Produto, pk=id)
-    form = ProdutoForm(instance=produto)
-    formset = ProdutoTamanhoFormSet(instance=produto)
-
+    produto = get_object_or_404(Produto, id=id)
     if request.method == 'POST':
-        form = ProdutoForm(request.POST, request.FILES, instance=produto)
-        formset = ProdutoTamanhoFormSet(request.POST, instance=produto)
-        
-        if form.is_valid() and formset.is_valid():
+        form = ProdutoForm(request.POST, request.FILES, instance=produto)  # Inclua request.FILES aqui
+        if form.is_valid():
             form.save()
-            formset.save()
-            return redirect('lista_produtos')  # Substitua 'lista_produtos' pela sua URL de redirecionamento
-
-    return render(request, 'Produto/testeform.html', {
-        'form': form,
-        'formset': formset,
-        'produto_id': id  # Passar o ID pode ser útil para o template
-    })
+            return redirect('lista_produtos')
+    else:
+        form = ProdutoForm(instance=produto)
+    return render(request, 'Produto/form_produto.html', {'form': form})
 
 def eliminar_produto(request, id):
     produto = get_object_or_404(Produto, id=id)
@@ -137,6 +107,20 @@ def eliminar_selecionados(request):
     
     # Redireciona para a página de listagem de produtos
     return redirect('lista_produtos')
+
+from django.shortcuts import redirect, render
+from .forms import ProdutoTamanhoForm
+
+def adicionar_tamanho(request):
+    if request.method == 'POST':
+        form = ProdutoTamanhoForm(request.POST)
+        if form.is_valid():
+            tamanho = form.save(commit=False)
+            tamanho.save()
+            return HttpResponseRedirect(reverse('lista_produtos'))
+    else:
+        form = ProdutoTamanhoForm()
+    return render(request, 'Produto/tamanhoForm.html', {'form': form})
 
 
 def login_view(request):

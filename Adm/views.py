@@ -12,21 +12,21 @@ from django.contrib.auth import authenticate, login,logout
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
+from django.db.models import Sum
 
 
 def lista_produtos_tamanhos(request):
     
     produtos_list = Produto.objects.all()
-    
     tamanhos_list = ProdutoTamanho.objects.all()
-    
-    
-    paginator_produtos = Paginator(produtos_list, 10)# Mostra 10 produtos por página
-    
+    for produto in produtos_list:
+        tamanhos_sum = ProdutoTamanho.objects.filter(produto_id=produto).aggregate(total=Sum('stock_por_tamanho'))
+        produto.stock = tamanhos_sum['total'] if tamanhos_sum['total'] else produto.stock
+        
+    paginator_produtos = Paginator(produtos_list, 10)  # Mostra 10 produtos por página
     page_number_produtos = request.GET.get('page')
-    
     page_obj_produtos = paginator_produtos.get_page(page_number_produtos)
-    
+
     if request.method == 'POST':
         
         form = UploadExcelForm(request.POST, request.FILES)
@@ -122,6 +122,25 @@ def adicionar_tamanho(request):
         form = ProdutoTamanhoForm()
     return render(request, 'Produto/tamanhoForm.html', {'form': form})
 
+def editar_tamanho(request, id):
+    tamanho = get_object_or_404(ProdutoTamanho, id=id)
+    if request.method == "POST":
+        form = ProdutoTamanhoForm(request.POST, instance=tamanho)
+        if form.is_valid():
+            form.save()
+            return redirect('nome_da_sua_url_para_lista_de_tamanhos')
+    else:
+        form = ProdutoTamanhoForm(instance=tamanho)
+    
+    return render(request, 'Produto/editar_tamanho.html', {'form': form})
+
+def excluir_tamanho(request, id):
+    tamanho = get_object_or_404(ProdutoTamanho, id=id)
+    if request.method == "POST":
+        tamanho.delete()
+        return redirect('nome_da_sua_url_para_lista_de_tamanhos')
+    
+    return render(request, 'Produto/confirmar_exclusao_tamanho.html', {'tamanho': tamanho})
 
 def login_view(request):
     # Se o user já está logado, redirecioná-lo.

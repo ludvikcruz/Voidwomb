@@ -1,0 +1,12 @@
+{% extends '_base.html' %}
+
+{% block content %}
+    <h2>Confirmar Exclusão</h2>
+    <p>Tem certeza que deseja excluir "{{ tamanho }}"?</p>
+    
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Excluir</button>
+    </form>
+    <a href="{% url 'nome_da_sua_url_para_lista_de_tamanhos' %}">Cancelar</a>
+{% endblock %}

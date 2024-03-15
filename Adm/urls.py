@@ -16,6 +16,8 @@ urlpatterns = [
     path('caminho/para/eliminar/produtos/selecionados/', views.eliminar_selecionados, name='eliminar_produtos_selecionados'),
     
     path("produtos/tamanhos/adicionar", views.adicionar_tamanho, name="adicionar_tamanho"),
+    path('produtos/tamanho/editar/<int:id>/', views.editar_tamanho, name='editar_tamanho'),
+    path('produtos/tamanho/excluir/<int:id>/', views.excluir_tamanho, name='excluir_tamanho'),
     
     #Paths dos users
     path('users/login',views.login_view,name ='login'),

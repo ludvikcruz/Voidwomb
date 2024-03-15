@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render,redirect
 
 from payment.carrinho import add_to_cart
-from .models import Evento, Produto, country
+from .models import Evento, Produto, ProdutoTamanho, country
 from django.core.mail import send_mail
 from django.http import HttpResponse
 
@@ -104,9 +104,14 @@ def produto(request, produto_id):
     # Utiliza get_object_or_404 para tentar obter o produto correspondente ao ID.
     # Caso não exista, retorna uma página 404 automaticamente.
     produto = get_object_or_404(Produto, id=produto_id)
+    tamanhos_disponiveis = ProdutoTamanho.objects.filter(produto_id=produto,stock_por_tamanho__gt=0)
     
+    context={
+        'produto': produto,
+        'tamanhos_disponiveis': tamanhos_disponiveis
+    }
     # Passa o produto obtido para o template.
-    return render(request, 'produto.html', {'produto': produto})
+    return render(request, 'produto.html', context)
 
 def pessoa_encomenda(request):
     return render(request,'store/pessoa_encomenda.html')

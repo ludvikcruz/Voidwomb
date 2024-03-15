@@ -119,6 +119,10 @@
             <td>{{ tamanho.produto_id }}</td>
             <td>{{ tamanho.get_tamanho_display }}</td>
             <td>{{ tamanho.stock_por_tamanho }}</td>
+            <td>
+                <a href="{% url 'editar_tamanho' tamanho.id %}">Editar</a>
+                <a href="{% url 'excluir_tamanho' tamanho.id %}" onclick="return confirm('Tem certeza que deseja excluir este tamanho?');">Excluir</a>
+            </td>
         </tr>
     {% endfor %}
 </table>

@@ -10,11 +10,12 @@ urlpatterns = [
     path('produtos/adicionar/', views.adicionar_produto, name='adicionar_produto'),
     path('produtos/editar/<int:id>/', views.editar_produto, name='editar_produto'),
     path('produtos/eliminar/<int:id>/', views.eliminar_produto, name='eliminar_produto'),
-    path('produtos/', views.lista_produtos, name='lista_produtos'),
-    path('produtos/importExcel/', views.lista_produtos, name='upload_excel'),
+    path('produtos/', views.lista_produtos_tamanhos, name='lista_produtos'),
+    path('produtos/importExcel/', views.lista_produtos_tamanhos, name='upload_excel'),
     path('produtos/ExportExel/', views.exportar_produtos_csv, name='exportar_produtos'),
     path('caminho/para/eliminar/produtos/selecionados/', views.eliminar_selecionados, name='eliminar_produtos_selecionados'),
     
+    path("produtos/tamanhos/adicionar", views.adicionar_tamanho, name="adicionar_tamanho"),
     
     #Paths dos users
     path('users/login',views.login_view,name ='login'),

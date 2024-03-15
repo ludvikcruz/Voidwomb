@@ -1,5 +1,5 @@
 from django.db import models
-
+from PIL import Image
 # Create your models here.
 class Produto(models.Model):
     CATEGORIAS = [
@@ -20,6 +20,21 @@ class Produto(models.Model):
     
     def __str__(self):
         return self.nome
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # Chama o método save original para salvar o objeto
+
+        if self.imagem:  # Verifica se uma imagem foi enviada
+            img = Image.open(self.imagem.path)  # Abre a imagem usando Pillow
+
+            # Define o tamanho máximo desejado (por exemplo, 800x800)
+            max_size = (800, 800)
+
+            # Redimensiona a imagem, preservando a proporção
+            img.thumbnail(max_size, Image.ANTIALIAS)
+
+            # Salva a imagem redimensionada, substituindo a original
+            img.save(self.imagem.path)
+            
 class ProdutoTamanho(models.Model):
     TAMANHOS = [
         ('xs', 'XS'),
@@ -30,7 +45,7 @@ class ProdutoTamanho(models.Model):
         ('xxl', 'XXL'),
     ]
     # Aqui a ForeignKey deve apontar para Produto, como já está, mas sem o sublinhado no nome do campo
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='tamanhos')
+    produto_id = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='tamanhos')
     tamanho = models.CharField(max_length=50, choices=TAMANHOS)
     stock_por_tamanho = models.IntegerField()
 

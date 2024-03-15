@@ -213,7 +213,7 @@ def listar_paises(request):
                 acronimo=row[1],
                 shipping=row[2],
             )
-        return HttpResponseRedirect(reverse('lista_paises'))
+        return HttpResponseRedirect(reverse('listar_paises'))
     return render(request, 'Paises/paisesLista.html', {'paises': paises})
 
 def editar_pais(request, id):

@@ -128,7 +128,7 @@ def editar_tamanho(request, id):
         form = ProdutoTamanhoForm(request.POST, instance=tamanho)
         if form.is_valid():
             form.save()
-            return redirect('nome_da_sua_url_para_lista_de_tamanhos')
+            return HttpResponseRedirect(reverse('lista_produtos'))
     else:
         form = ProdutoTamanhoForm(instance=tamanho)
     
@@ -138,7 +138,7 @@ def excluir_tamanho(request, id):
     tamanho = get_object_or_404(ProdutoTamanho, id=id)
     if request.method == "POST":
         tamanho.delete()
-        return redirect('nome_da_sua_url_para_lista_de_tamanhos')
+        return HttpResponseRedirect(reverse('lista_produtos'))
     
     return render(request, 'Produto/confirmar_exclusao_tamanho.html', {'tamanho': tamanho})
 

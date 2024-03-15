@@ -25,6 +25,11 @@ class ProdutoTamanhoForm(forms.ModelForm):
             'tamanho': forms.Select(attrs={'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'}),
             'stock_por_tamanho': forms.NumberInput(attrs={'class': 'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'}),
         }
+        
+    def __init__(self, *args, **kwargs):
+        super(ProdutoTamanhoForm, self).__init__(*args, **kwargs)
+        # Filtra os produtos para mostrar apenas os que têm a categoria 'roupa'
+        self.fields['produto_id'].queryset = Produto.objects.filter(categoria='roupa')
 
 class EventoForm(forms.ModelForm):
     class Meta:

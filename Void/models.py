@@ -30,7 +30,7 @@ class Produto(models.Model):
             max_size = (800, 800)
 
             # Redimensiona a imagem, preservando a proporção
-            img.thumbnail(max_size, Image.ANTIALIAS)
+            img.thumbnail(max_size, Image.Resampling.LANCZOS)
 
             # Salva a imagem redimensionada, substituindo a original
             img.save(self.imagem.path)
@@ -79,7 +79,7 @@ class Evento(models.Model):
             max_size = (800, 800)
 
             # Redimensiona a imagem, preservando a proporção
-            img.thumbnail(max_size, Image.ANTIALIAS)
+            img.thumbnail(max_size, Image.Resampling.LANCZOS)
 
             # Salva a imagem redimensionada, substituindo a original
             img.save(self.foto.path)

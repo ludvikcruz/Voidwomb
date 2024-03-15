@@ -1,5 +1,6 @@
 from django.db import models
 from PIL import Image
+from django.core.files.storage import default_storage
 # Create your models here.
 class Produto(models.Model):
     CATEGORIAS = [
@@ -21,6 +22,11 @@ class Produto(models.Model):
     def __str__(self):
         return self.nome
     def save(self, *args, **kwargs):
+        if self.pk:  # verifica se o objeto já existe
+            old_obj = Produto.objects.get(pk=self.pk)
+            if old_obj.imagem and old_obj.imagem != self.imagem and default_storage.exists(old_obj.imagem.name):
+                default_storage.delete(old_obj.imagem.name)
+                
         super().save(*args, **kwargs)  # Chama o método save original para salvar o objeto
 
         if self.imagem:  # Verifica se uma imagem foi enviada
@@ -34,7 +40,12 @@ class Produto(models.Model):
 
             # Salva a imagem redimensionada, substituindo a original
             img.save(self.imagem.path)
-            
+    def delete(self, *args, **kwargs):
+        if self.imagem and default_storage.exists(self.imagem.name):
+            default_storage.delete(self.imagem.name)
+        super().delete(*args, **kwargs)
+        
+         
 class ProdutoTamanho(models.Model):
     TAMANHOS = [
         ('xs', 'XS'),
@@ -70,6 +81,10 @@ class Evento(models.Model):
     def __str__(self):
         return self.titulo
     def save(self, *args, **kwargs):
+        if self.pk:  # verifica se o objeto já existe
+            old_obj = Evento.objects.get(pk=self.pk)
+            if old_obj.foto and old_obj.foto != self.foto and default_storage.exists(old_obj.foto.name):
+                default_storage.delete(old_obj.foto.name)
         super().save(*args, **kwargs)  # Chama o método save original para salvar o objeto
 
         if self.foto:  # Verifica se uma imagem foi enviada
@@ -84,3 +99,7 @@ class Evento(models.Model):
             # Salva a imagem redimensionada, substituindo a original
             img.save(self.foto.path)
             
+    def delete(self, *args, **kwargs):
+        if self.foto and default_storage.exists(self.foto.name):
+            default_storage.delete(self.foto.name)
+        super().delete(*args, **kwargs)     

@@ -30,6 +30,7 @@ urlpatterns = [
     path('eventos/add/', views.evento_add, name='evento_add'),
     path('eventos/edit/<int:pk>/', views.evento_edit, name='evento_edit'),
     path('eventos/delete/<int:pk>/', views.evento_delete, name='evento_delete'),
+    path('eventos/exportar-eventos-csv/', views.exportar_eventos_para_csv, name='exportar_eventos_csv'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

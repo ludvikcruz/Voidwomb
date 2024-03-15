@@ -269,3 +269,28 @@ def evento_delete(request, pk):
         evento.delete()
         return HttpResponseRedirect(reverse('lista_eventos'))
     return render(request, 'Eventos/delete.html', {'evento': evento})
+
+def exportar_eventos_para_csv(request):
+    # Cria a resposta com o tipo de conteúdo correto
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="eventos.csv"'
+
+    # Cria um objeto writer para escrever no arquivo CSV
+    writer = csv.writer(response)
+
+    # Escreve o cabeçalho do CSV
+    writer.writerow(['ID', 'Título', 'Data', 'Localização', 'Hiperligação', 'Caminho da Foto'])
+
+    # Escreve as linhas de dados dos eventos
+    eventos = Evento.objects.all()
+    for evento in eventos:
+        writer.writerow([
+            evento.id, 
+            evento.titulo, 
+            evento.data, 
+            evento.localizacao, 
+            evento.hiperligacao, 
+            request.build_absolute_uri(evento.foto.url) if evento.foto else None,
+        ])
+
+    return response

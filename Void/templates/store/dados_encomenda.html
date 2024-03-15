@@ -140,18 +140,18 @@
     const countrySelector = document.getElementById('country-selector');
     const totalElement = document.getElementById('total'); // Supondo que você tenha um elemento com ID 'total'
     const totalBase = parseFloat(totalElement.textContent); // Supondo que 'totalElement' contenha apenas o número
+    const ueCountries = ['AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK']; // Adicione todos os códigos dos países da UE
   
     countrySelector.addEventListener('change', function() {
       let shippingCost;
-      switch (this.value) {
-        case 'PT':
-          shippingCost = 2.5;
-          break;
-        case 'US':
-          shippingCost = 5.7;
-          break;
-        default:
-          shippingCost = 6.5;
+      if (this.value === 'PT') {
+        shippingCost = 2.5;
+      } else if (this.value === 'US') {
+        shippingCost = 5.7;
+      } else if (ueCountries.includes(this.value)) {
+        shippingCost = 4.0; // Supondo que este seja o valor para países da UE
+      } else {
+        shippingCost = 6.5;
       }
   
       // Calcula o novo total
@@ -160,6 +160,6 @@
       // Atualiza o total na página
       document.getElementById('total_com_envio').textContent = `${newTotal.toFixed(2)}€`;
     });
-  });
+});
   </script>
 {% endblock %}

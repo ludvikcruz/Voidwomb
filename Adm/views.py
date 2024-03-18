@@ -74,10 +74,10 @@ def adicionar_produto(request):
             form.save()
             # Adiciona uma mensagem de sucesso
             messages.success(request, 'Produto adicionado com sucesso!')
-            return redirect('lista_produtos')
+            return HttpResponseRedirect(reverse('lista_produtos'))
     else:
         form = ProdutoForm()
-    return render(request, 'form_produto.html', {'form': form})
+    return render(request, 'Produto/form_produto.html', {'form': form})
 
 
 

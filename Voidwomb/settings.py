@@ -21,9 +21,10 @@ load_dotenv()
 
 
 #paypal settings
+PAYPAL_RECEIVER_EMAIL = 'voidwomb.band@gmail.com'
 PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
-PAYPAL_MODE = 'sandbox'
+PAYPAL_MODE = 'live'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'

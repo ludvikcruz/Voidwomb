@@ -254,7 +254,40 @@
     
       // Inicializa o botão do PayPal com o total base na carga da página
       renderPayPalButton(totalBase.toFixed(2));
+      function verificarEstoqueECriarPagamento() {
+        // Obtenha os detalhes do carrinho de alguma forma, exemplo:
+        const itensCarrinho = obterDetalhesDoCarrinho(); // Implemente esta função conforme sua lógica de carrinho
+    
+        fetch('api/request/fetchstock', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'), // Assume a função getCookie como definido anteriormente
+            },
+            body: JSON.stringify({itens: itensCarrinho})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.sucesso) {
+                // Prossiga com a criação do pagamento
+                criarPagamento();
+            } else {
+                // Cancelar a compra e avisar sobre os problemas de estoque
+                alertarSobreProblemasDeEstoque(data.problemas_estoque); // Implemente esta função
+            }
+        })
+        .catch(error => console.error('Erro na verificação de estoque:', error));
+    }
+    function alertarSobreProblemasDeEstoque(problemas) {
+      let mensagem = "Não foi possível concluir a compra devido a problemas de estoque para os seguintes itens:\n";
+      problemas.forEach((problema) => {
+          mensagem += `${problema.nome} - Quantidade disponível: ${problema.quantidade_disponivel || 'N/A'}\n`;
+      });
+      alert(mensagem);
+  }
+      
     });
+
     </script>
     
     

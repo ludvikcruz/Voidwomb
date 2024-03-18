@@ -116,6 +116,7 @@ def produto(request, produto_id):
 def pessoa_encomenda(request):
     return render(request,'store/pessoa_encomenda.html')
 
-
+def payout(request):
+    return render(request,'store/payment.html')
 
 

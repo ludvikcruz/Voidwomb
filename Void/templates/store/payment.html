@@ -1,4 +1,41 @@
 {% extends "base.html" %}
 {% block content %}
-
+    <div class="bg-gray-100" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="container mx-auto mt-10">
+          <div class="flex shadow-md my-10 border border-white border-2">
+            <!-- PayPal button container -->
+            <div id="paypal-button-container"></div>
+          </div>
+        </div>
+      </div>
+<script src="https://www.paypal.com/sdk/js?client-id=AZIqzSlWW4eLADMUgxN-i-OmL-hjkDKSonPLz3t6cEyJSsaakgDeV_U5ZUQRIoKuClyuN6bJKkCJN0qD&components=buttons"></script>
+<script>
+   
+    paypal.Buttons({
+        style: {
+          layout: 'vertical',
+          color: 'silver',
+          shape: 'pill',
+          label: 'paypal'
+        },
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: '0.01' // Você deverá calcular este valor com base no carrinho
+              }
+            }]
+          });
+        },
+      onApprove: function(data, actions) {
+        // Capture the funds from the transaction
+        return actions.order.capture().then(function(details) {
+          // Show a success message to your buyer
+          alert('Transaction completed by ' + details.payer.name.given_name);
+          // Aqui, você pode redirecionar o usuário ou atualizar a página para mostrar o status do pagamento
+        });
+      }
+      
+    }).render('#paypal-button-container');
+  </script>
 {% endblock content %}

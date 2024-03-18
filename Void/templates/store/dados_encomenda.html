@@ -191,7 +191,7 @@
  
    {% endcomment %}
 
-   <script src="https://www.paypal.com/sdk/js?client-id=AZIqzSlWW4eLADMUgxN-i-OmL-hjkDKSonPLz3t6cEyJSsaakgDeV_U5ZUQRIoKuClyuN6bJKkCJN0qD&currency=EUR"></script>
+   <script src="https://www.paypal.com/sdk/js?client-id=AUuojTUZAwI26K3CFYWSt8XkD7i4sV4GPmQ8v0tk2wLnWoJgyZ5UVDeemKNSvIwBuAPlAPDb5bp1Kqij&currency=EUR"></script>
    <script>
     document.addEventListener('DOMContentLoaded', function() {
       const countrySelector = document.getElementById('country-selector');
@@ -203,11 +203,11 @@
       countrySelector.addEventListener('change', function() {
         let shippingCost;
         if (this.value === 'PT') {
-          shippingCost = 2.5;
+          shippingCost = 2.7;
         } else if (this.value === 'US') {
           shippingCost = 5.7;
         } else if (ueCountries.includes(this.value)) {
-          shippingCost = 4.0; // Supondo que este seja o valor para países da UE
+          shippingCost = 4.5; // Supondo que este seja o valor para países da UE
         } else {
           shippingCost = 6.5;
         }

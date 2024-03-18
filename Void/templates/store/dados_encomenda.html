@@ -175,7 +175,29 @@
         // Re-renderiza o botão do PayPal com o novo total
         renderPayPalButton(newTotal.toFixed(2));
       });
-    
+      function gerarTokenUnico() {
+        return 'tkn_' + Math.random().toString(36).substr(2) + new Date().getTime().toString(36);
+    }
+    function coletarDadosDoFormulario() {
+      return {
+          name: document.getElementById('customer-name').value,
+          email: document.getElementById('email').value,
+          address: document.getElementById('address').value,
+          postalCode: document.getElementById('postal-code').value,
+          city: document.getElementById('city').value,
+          carrinho: obterDetalhesDoCarrinho() // Implemente esta função conforme sua lógica de carrinho
+      };
+  }
+  function getCookie(name) {
+    let nameEQ = name + "=";
+    let ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
       // Função para re-renderizar o botão do PayPal com o valor atualizado
       function renderPayPalButton(newTotal) {
         if (window.paypal) {
@@ -192,16 +214,46 @@
               return actions.order.create({
                 purchase_units: [{
                   amount: {
-                    value: '0.01' // Usa o novo total para a transação
+                    value: newTotal // Usa o novo total para a transação
                   }
                 }]
               });
             },
             onApprove: function(data, actions) {
               return actions.order.capture().then(function(details) {
-                alert('Transação concluída por ' + details.payer.name.given_name);
-              });
-            }
+                // Gera um token único para esta compra
+                const tokenUnico = gerarTokenUnico();
+                const dadosDoFormulario = coletarDadosDoFormulario();
+                const dadosDoCarrinho = getCookie('carrinho');
+                const carrinho = dadosDoCarrinho ? JSON.parse(dadosDoCarrinho) : {};
+                fetch('/caminho-para-api-de-registro-de-venda/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Token-Unico': tokenUnico, // Envia o token único no cabeçalho
+                    },
+                    body: JSON.stringify({
+                        orderID: data.orderID,
+                        details: details
+                        customerInfo: dadosDoFormulario
+                        carrinho: carrinho
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Falha ao enviar os detalhes da compra para o servidor.');
+                })
+                .then(data => {
+                    // Sucesso - Redireciona ou atualiza a UI conforme necessário
+                    window.location.href = '/caminho-para-pagina-de-agradecimento/';
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                });
+            });
+        }
           }).render('#paypal-button-container');
         }
       }
@@ -209,7 +261,7 @@
       // Inicializa o botão do PayPal com o total base na carga da página
       renderPayPalButton(totalBase.toFixed(2));
     });
-
+    
     </script>
     
     

@@ -1,103 +1,55 @@
-from django.shortcuts import redirect
-from django.conf import settings
-from django.http import HttpResponse, JsonResponse
-import paypalrestsdk
-from django.core.mail import send_mail
-from Void.models import Produto
+import json
+import re
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
-# Configuração do PayPal
-paypalrestsdk.configure({
-    "mode": settings.PAYPAL_MODE,  # sandbox or live
-    "client_id": settings.PAYPAL_CLIENT_ID,
-    "client_secret": settings.PAYPAL_CLIENT_SECRET,
-})
+from Void.models import Produto, ProdutoTamanho
+from .models import Pagamento, ItemDoCarrinho
 
-def get_paypal_items_from_cart(request):
-    carrinho = request.session.get('carrinho', {})
-    if not carrinho:
-        return [], 0  # Retorna listas vazias se o carrinho não existir ou estiver vazio
+@csrf_exempt
+@require_http_methods(["POST"])
+def registrar_pagamento(request):
+    # Captura o token único do cabeçalho da solicitação
+    token_unico = request.headers.get('Token-Unico')
 
-    itens_paypal = []
-    total = 0
-    for produto_id, quantidade in carrinho.items():
-        try:
-            produto = Produto.objects.get(id=produto_id)
-            subtotal = produto.preco * quantidade
-            total += subtotal
-            itens_paypal.append({
-                "name": produto.nome,
-                "sku": produto_id,
-                "price": str(produto.preco),
-                "currency": "EUR",
-                "quantity": quantidade,
-            })
-        except Produto.DoesNotExist:
-            # Handle the case where the product does not exist.
-            continue  # ou adicione uma lógica para lidar com produtos não encontrados
+    # Valida o formato do token único
+    if not token_unico or not re.match(r'^tkn_[a-zA-Z0-9]+$', token_unico):
+        return JsonResponse({"erro": "Token inválido ou ausente."}, status=400)
 
-    return itens_paypal, total
+    try:
+        data = json.loads(request.body)
 
-def create_payment(request):
-    itens_paypal, total = get_paypal_items_from_cart(request)
-    payment = paypalrestsdk.Payment({
-        "intent": "sale",
-        "payer": {
-            "payment_method": "paypal",
-        },
-        "redirect_urls": {
-            "return_url": "http://127.0.0.1:8000/payment/execute/",
-            "cancel_url": "http://127.0.0.1:8000/payment/cancel/",
-        },
-        "transactions": [{
-            "item_list": {
-                "items": itens_paypal,
-            },
-            "amount": {
-                "total": f"{total:.2f}",
-                "currency": "EUR",
-            },
-            "description": "Descrição da compra no carrinho.",
-        }]
-    })
+        # Prossegue para criar o registro de pagamento apenas se o token é válido
+        pagamento = Pagamento.objects.create(
+            order_id=data['orderID'],
+            email=data['customerInfo']['email'],
+            endereco=data['customerInfo']['address'],
+            codigo_postal=data['customerInfo']['postalCode'],
+            cidade=data['customerInfo']['city'],
+            total=data['carrinho']['total']
+        )
+        for item in data['carrinho']['itens']:
+                produto = Produto.objects.get(id=item['produto_id'])
+                quantidade_vendida = item['quantidade']
+                tamanho_nome = item.get('tamanho')  # Pode ser None se não aplicável
 
-    if payment.create():
-        print("Payment created successfully")
-        for link in payment.links:
-            if link.rel == "approval_url":
-                # Captura a URL de aprovação para redirecionar o usuário ao PayPal
-                approval_url = str(link.href)
-                return redirect(approval_url)
-    else:
-        print(payment.error)
-    return JsonResponse({"error": "Falha na criação do pagamento"})
+                if tamanho_nome:
+                    tamanho = ProdutoTamanho.objects.get(produto=produto, nome=tamanho_nome)
+                    if tamanho.estoque >= quantidade_vendida:
+                        tamanho.estoque -= quantidade_vendida
+                        tamanho.save()
+                        produto.estoque_total -= quantidade_vendida  # Atualiza estoque total
+                        produto.save()
+                    else:
+                        raise ValueError("Estoque insuficiente para o tamanho selecionado.")
+                else:
+                    if produto.estoque_total >= quantidade_vendida:
+                        produto.estoque_total -= quantidade_vendida
+                        produto.save()
+                    else:
+                        raise ValueError("Estoque insuficiente para o produto selecionado.")
 
-def execute_payment(request):
-    payment_id = request.GET.get('paymentId')
-    payer_id = request.GET.get('PayerID')
-    payment = paypalrestsdk.Payment.find(payment_id)
-
-    if payment.execute({"payer_id": payer_id}):
-        print("Payment execute successfully")
-        
-        # Enviar e-mail de confirmação
-        send_payment_confirmation_email(payment)
-
-        # Aqui você pode redirecionar para uma página de sucesso ou retornar uma resposta de sucesso
-        return HttpResponse("Pagamento concluído com sucesso.")
-    else:
-        print(payment.error)  # Logging the error
-        # Aqui você pode redirecionar para uma página de erro ou retornar uma resposta de erro
-        return HttpResponse("Falha na execução do pagamento.")
-
-def send_payment_confirmation_email(payment):
-    subject = 'Confirmação de Pagamento'
-    message = f'O pagamento de {payment.transactions[0].amount.total} {payment.transactions[0].amount.currency} foi concluído com sucesso.'
-    email_from = settings.EMAIL_HOST_USER
-    recipient_list = ['emaildodestinatario@example.com']
-    send_mail(subject, message, email_from, recipient_list)
-
-
-def payment_cancelled(request):
-    # Aqui você pode adicionar qualquer lógica que precisa ser executada quando o pagamento é cancelado
-    # Por exemplo, mostrar uma mensagem ao usuário, registrar o evento, etc.
-    return HttpResponse("Pagamento cancelado. Se você encontrou um problema com o pagamento, por favor, tente novamente ou entre em contato conosco.")
+        return JsonResponse({"mensagem": "Pagamento registrado, estoque atualizado."}, status=201)
+    except Exception as e:
+        return JsonResponse({"erro": str(e)}, status=400)

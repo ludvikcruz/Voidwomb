@@ -6,10 +6,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('create/', views.create_payment, name='create_payment'),
-    path('execute/', views.execute_payment, name='execute_payment'),
-    path('cancel/', views.payment_cancelled, name='cancel_payment'),
-
+    path('registrar-pagamento/', views.registrar_pagamento, name='registrar_pagamento'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -6,6 +6,7 @@ from payment.carrinho import add_to_cart
 from .models import Evento, Produto, ProdutoTamanho, country
 from django.core.mail import send_mail
 from django.http import HttpResponse, HttpResponseRedirect
+from django.views.decorators.http import require_POST
 
 def index(request):
     return render(request,'index.html')
@@ -44,51 +45,68 @@ def store(request):
 def about(request):
     return render(request,'about.html')
 
-def adicionar_ao_carrinho(request, produto_id):
-    cart = request.session.get('carrinho', {})
-
-    # Busca o produto pelo ID ou retorna uma resposta 404 se não encontrado
-    produto = get_object_or_404(Produto, id=produto_id)
-
-    product_id_str = str(produto_id)  # Certifique-se de que o ID seja uma string para evitar problemas de chave em dicionários.
-    
-    # Verifica se o produto já está no carrinho e se tem estoque suficiente
-    quantidade_atual = cart.get(product_id_str, 0)
-    if quantidade_atual < produto.stock:  # Verifica o estoque antes de adicionar ou incrementar
-        if product_id_str in cart:
-            cart[product_id_str] += 1
-        else:
-            messages.error(request, f'Pedido acima do stock atual. Atualmente, temos apenas {produto.stock} unidades de {produto.nome} em estoque.')
-            cart[product_id_str] = 1
-        request.session['carrinho'] = cart
-        # Você pode adicionar alguma mensagem de sucesso aqui
-    else:
-        messages.error(request, f'Pedido acima do stock atual. Atualmente, temos apenas {produto.stock} unidades de {produto.nome} em estoque.')
-        return redirect('store')
-
-    return redirect('store')
-
+@require_POST  # Assegura que esta view só possa ser acessada via método POST
 def adicionar_dentro_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
 
-    # Busca o produto pelo ID ou retorna uma resposta 404 se não encontrado
     produto = get_object_or_404(Produto, id=produto_id)
+    tamanho = request.POST.get('tamanho')
+    quantidade_a_adicionar = int(request.POST.get('quantidade', 1))  # Assume 1 se não especificado
 
-    product_id_str = str(produto_id)  # Certifique-se de que o ID seja uma string para evitar problemas de chave em dicionários.
-    
-    # Verifica se o produto já está no carrinho e se tem estoque suficiente
-    quantidade_atual = cart.get(product_id_str, 0)
-    if quantidade_atual < produto.stock:  # Verifica o estoque antes de adicionar ou incrementar
-        if product_id_str in cart:
-            cart[product_id_str] += 1
-            messages.success(request, f'Produto {produto.nome} adicionado ao carrinho com sucesso.')
-        else:
-            cart[product_id_str] = 1
-        request.session['carrinho'] = cart
-        # Você pode adicionar alguma mensagem de sucesso aqui
+    # Chave única para identificar produto e tamanho no carrinho
+    chave_carrinho = f"{produto_id}_{tamanho}"
+
+    # Verifica se o produto já está no carrinho
+    if chave_carrinho in cart:
+        item_atual = cart[chave_carrinho]
+        quantidade_total = item_atual['quantidade'] + quantidade_a_adicionar
     else:
-        messages.error(request, f'Pedido acima do stock atual. Atualmente, temos apenas {produto.stock} unidades de {produto.nome} em estoque.')
-        return redirect('carrinho')
+        quantidade_total = quantidade_a_adicionar
+
+    # Busca o objeto Tamanho para verificar o estoque específico
+    tamanho_objeto = get_object_or_404(ProdutoTamanho, produto=produto, nome=tamanho)
+
+    if quantidade_total <= tamanho_objeto.estoque:
+        # Atualiza ou adiciona o item com a nova quantidade
+        cart[chave_carrinho] = {'quantidade': quantidade_total, 'tamanho': tamanho}
+        request.session['carrinho'] = cart
+        messages.success(request, f'{quantidade_a_adicionar} unidades do tamanho {tamanho} de {produto.nome} adicionadas ao carrinho.')
+        return redirect('store')
+    else:
+        # Quantidade solicitada excede o estoque disponível
+        messages.error(request, f'Não é possível adicionar a quantidade desejada ao carrinho. Quantidade em estoque disponível para o tamanho {tamanho}: {tamanho_objeto.estoque}.')
+
+    return redirect('store')
+
+@require_POST  # Assegura que esta view só possa ser acessada via método POST
+def adicionar_dentro_carrinho(request, produto_id):
+    cart = request.session.get('carrinho', {})
+
+    produto = get_object_or_404(Produto, id=produto_id)
+    tamanho = request.POST.get('tamanho')
+    quantidade_a_adicionar = int(request.POST.get('quantidade', 1))  # Assume 1 se não especificado
+
+    # Chave única para identificar produto e tamanho no carrinho
+    chave_carrinho = f"{produto_id}_{tamanho}"
+
+    # Verifica se o produto já está no carrinho
+    if chave_carrinho in cart:
+        item_atual = cart[chave_carrinho]
+        quantidade_total = item_atual['quantidade'] + quantidade_a_adicionar
+    else:
+        quantidade_total = quantidade_a_adicionar
+
+    # Busca o objeto Tamanho para verificar o estoque específico
+    tamanho_objeto = get_object_or_404(ProdutoTamanho, produto=produto, nome=tamanho)
+
+    if quantidade_total <= tamanho_objeto.estoque:
+        # Atualiza ou adiciona o item com a nova quantidade
+        cart[chave_carrinho] = {'quantidade': quantidade_total, 'tamanho': tamanho}
+        request.session['carrinho'] = cart
+        messages.success(request, f'{quantidade_a_adicionar} unidades do tamanho {tamanho} de {produto.nome} adicionadas ao carrinho.')
+    else:
+        # Quantidade solicitada excede o estoque disponível
+        messages.error(request, f'Não é possível adicionar a quantidade desejada ao carrinho. Quantidade em estoque disponível para o tamanho {tamanho}: {tamanho_objeto.estoque}.')
 
     return redirect('carrinho')
 

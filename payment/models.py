@@ -1,26 +1,23 @@
 from django.db import models
-from Void.models import Produto
 
-class Sale(models.Model):
-    product_name = models.CharField(max_length=255)
-    sku = models.CharField(max_length=100)
-    quantity = models.IntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    buyer_email = models.EmailField()
-    date = models.DateTimeField(auto_now_add=True)
-    id_produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
+class Pagamento(models.Model):
+    order_id = models.CharField(max_length=100, unique=True)
+    email = models.EmailField()
+    endereco = models.CharField(max_length=255)
+    codigo_postal = models.CharField(max_length=20)
+    cidade = models.CharField(max_length=100)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    data_pagamento = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.product_name} ({self.quantity}) - {self.date}"
-    
-    
-    
-class ItemCarrinho(models.Model):
-    produto = models.ForeignKey(Produto, on_delete=models.CASCADE)
-    quantidade = models.IntegerField(default=1)
+        return f"Pagamento {self.order_id}"
+
+class ItemDoCarrinho(models.Model):
+    pagamento = models.ForeignKey(Pagamento, related_name='itens', on_delete=models.CASCADE)
+    produto_id = models.CharField(max_length=100)
+    nome = models.CharField(max_length=255)
     preco = models.DecimalField(max_digits=10, decimal_places=2)
+    quantidade = models.IntegerField()
 
     def __str__(self):
-        return f"{self.quantidade} de {self.produto.nome}"
-    class Meta:
-        db_table = 'payment_itemcarrinho'
+        return f"Item {self.nome} do Pagamento {self.pagamento.order_id}"

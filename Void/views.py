@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import get_object_or_404, render,redirect
 
 from payment.carrinho import add_to_cart
@@ -118,5 +119,35 @@ def pessoa_encomenda(request):
 
 def payout(request):
     return render(request,'store/payment.html')
+from django.http import JsonResponse
+from .models import Produto
+
+def verificar_estoque(request):
+    if request.method == 'POST':
+        dados = json.loads(request.body)
+        itens = dados.get('itens', [])
+        problemas_estoque = []
+
+        for item in itens:
+            produto_id = item.get('id')
+            quantidade_requerida = item.get('quantidade')
+            try:
+                produto = Produto.objects.get(id=produto_id)
+                if produto.quantidade < quantidade_requerida:
+                    problemas_estoque.append({
+                        'id': produto_id,
+                        'nome': produto.nome,
+                        'quantidade_disponivel': produto.quantidade
+                    })
+            except Produto.DoesNotExist:
+                problemas_estoque.append({'id': produto_id, 'erro': 'Produto não encontrado'})
+
+        if problemas_estoque:
+            return JsonResponse({'sucesso': False, 'problemas_estoque': problemas_estoque})
+        
+        return JsonResponse({'sucesso': True})
+
+    return JsonResponse({'erro': 'Método inválido'}, status=400)
+
 
 

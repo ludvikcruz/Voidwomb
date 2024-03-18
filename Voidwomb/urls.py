@@ -35,6 +35,7 @@ urlpatterns = [
     path('store/product/<int:produto_id>',views.produto,name='produto'),
     path('cart/details',views.pessoa_encomenda,name='pessoa_encomenda'),
     path('cart/payment/',views.payout,name='pay'),
+    path('api/request/fetchstock',views.verificar_estoque,name='verify')
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

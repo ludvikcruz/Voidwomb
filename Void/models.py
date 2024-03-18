@@ -48,12 +48,12 @@ class Produto(models.Model):
          
 class ProdutoTamanho(models.Model):
     TAMANHOS = [
-        ('xs', 'XS'),
-        ('s', 'S'),
-        ('m', 'M'),
-        ('l', 'L'),
-        ('xl', 'XL'),
-        ('xxl', 'XXL'),
+        ('XS', 'XS'),
+        ('S', 'S'),
+        ('M', 'M'),
+        ('L', 'L'),
+        ('XL', 'XL'),
+        ('XXL', 'XXL'),
     ]
     # Aqui a ForeignKey deve apontar para Produto, como já está, mas sem o sublinhado no nome do campo
     produto_id = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='tamanhos')

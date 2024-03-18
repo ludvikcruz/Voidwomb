@@ -58,13 +58,13 @@ def adicionar_ao_carrinho(request, produto_id):
         if product_id_str in cart:
             cart[product_id_str] += 1
         else:
-            messages.error(request,'Pedido acima do stock atual, atualmente temos '+ produto.stock + ' em stock')
+            messages.error(request, f'Pedido acima do stock atual. Atualmente, temos apenas {produto.stock} unidades de {produto.nome} em estoque.')
             cart[product_id_str] = 1
         request.session['carrinho'] = cart
         # Você pode adicionar alguma mensagem de sucesso aqui
     else:
-        # Aqui você pode retornar uma mensagem de erro indicando que não há estoque suficiente
-        pass
+        messages.error(request, f'Pedido acima do stock atual. Atualmente, temos apenas {produto.stock} unidades de {produto.nome} em estoque.')
+        return redirect('store')
 
     return redirect('store')
 
@@ -81,14 +81,14 @@ def adicionar_dentro_carrinho(request, produto_id):
     if quantidade_atual < produto.stock:  # Verifica o estoque antes de adicionar ou incrementar
         if product_id_str in cart:
             cart[product_id_str] += 1
+            messages.success(request, f'Produto {produto.nome} adicionado ao carrinho com sucesso.')
         else:
-            messages.error(request,'Pedido acima do stock atual, atualmente temos '+ produto.stock + ' em stock')
             cart[product_id_str] = 1
         request.session['carrinho'] = cart
         # Você pode adicionar alguma mensagem de sucesso aqui
     else:
-        # Aqui você pode retornar uma mensagem de erro indicando que não há estoque suficiente
-        pass
+        messages.error(request, f'Pedido acima do stock atual. Atualmente, temos apenas {produto.stock} unidades de {produto.nome} em estoque.')
+        return redirect('carrinho')
 
     return redirect('carrinho')
 
@@ -107,22 +107,38 @@ def remover_do_carrinho(request, produto_id):
 
 def carrinho(request):
     countrys = country.objects.all()
-    carrinho = request.session.get('carrinho', {})
+    cart = request.session.get('carrinho', {})
     itens_carrinho = []
     total = 0
-    for produto_id, quantidade in carrinho.items():
-        produto = Produto.objects.get(id=produto_id)
-        subtotal = produto.preco * quantidade
-        total += subtotal
-        itens_carrinho.append({
-            'produto_id':produto.id,
-            'produto': produto,
-            'quantidade': quantidade,
-            'subtotal': subtotal,
-        })
 
-    return render(request, 'store/dados_encomenda.html', {'itens_carrinho': itens_carrinho, 'total': total,'countrys':countrys})
+    for produto_id, quantidade in cart.items():
+        produto = get_object_or_404(Produto, id=produto_id)
+        if quantidade > produto.stock:
+            messages.error(request, f'Estoque insuficiente para {produto.nome}. Disponíveis: {produto.stock}.')
+            # Adiciona ao carrinho mas marca como inativo e não adiciona ao total
+            itens_carrinho.append({
+                'produto_id': produto.id,
+                'produto': produto,
+                'quantidade': quantidade,
+                'subtotal': produto.preco * min(quantidade, produto.stock),
+                'ativo': False,  # Produto inativo devido a estoque insuficiente
+            })
+        else:
+            subtotal = produto.preco * quantidade
+            total += subtotal  # Adiciona ao total apenas se ativo
+            itens_carrinho.append({
+                'produto_id': produto.id,
+                'produto': produto,
+                'quantidade': quantidade,
+                'subtotal': subtotal,
+                'ativo': True,
+            })
 
+    return render(request, 'store/dados_encomenda.html', {
+        'itens_carrinho': itens_carrinho,
+        'total': total,
+        'countrys': countrys,
+    })
 def produto(request, produto_id):
     # Utiliza get_object_or_404 para tentar obter o produto correspondente ao ID.
     # Caso não exista, retorna uma página 404 automaticamente.
@@ -143,7 +159,20 @@ def payout(request):
     return render(request,'store/payment.html')
 
 
+def remover_dentro_carrinho(request, produto_id):
+    # Acessa o carrinho armazenado na sessão
+    carrinho = request.session.get('carrinho', {})
 
+    # Converte o produto_id para string, pois as chaves do dicionário estão em string
+    product_id_str = str(produto_id)
+
+    # Verifica se o produto existe no carrinho e o remove
+    if product_id_str in carrinho:
+        del carrinho[product_id_str]
+        request.session['carrinho'] = carrinho  # Salva o carrinho atualizado na sessão
+
+    # Redireciona para a página do carrinho ou para outra página de sua escolha
+    return redirect('carrinho')
 
 
 

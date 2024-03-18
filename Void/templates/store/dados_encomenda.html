@@ -68,11 +68,17 @@
                           </a>
                       </div>
                   </td>
+                  {% if not product.ativo %}
                   <td class="px-6 py-4 font-semibold dark:text-white text-white">
-                      {{product.produto.preco}}€
+                      <p style="color: red;">Product out of stock!</p>
                   </td>
+                  {% elif product.ativo %}
+                  <td class="px-6 py-4 font-semibold dark:text-white text-white">
+                    {{product.produto.preco}}€
+                </td>
+                  {% endif %}
                   <td class="px-6 py-4 text-white">
-                      <a href="{%url 'remover_do_carrinho' product.produto_id %}" class="text-red font-medium text-red-600 dark:text-red-500 hover:underline">Remove</a>
+                      <a href="{%url 'removerTdentro' product.produto_id %}" class="text-red font-medium text-red-600 dark:text-red-500 hover:underline">Remove</a>
                   </td>
               </tr>
               {% endfor %}
@@ -138,58 +144,6 @@
     </div>
   </div>
 </div>
-{% comment %} <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const countrySelector = document.getElementById('country-selector');
-    const totalElement = document.getElementById('total'); // Supondo que você tenha um elemento com ID 'total'
-    const totalBase = parseFloat(totalElement.textContent); // Supondo que 'totalElement' contenha apenas o número
-    const ueCountries = ['AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK']; // Adicione todos os códigos dos países da UE
-  
-    countrySelector.addEventListener('change', function() {
-      let shippingCost;
-      if (this.value === 'PT') {
-        shippingCost = 2.7;
-      } else if (this.value === 'US') {
-        shippingCost = 5.7;
-      } else if (ueCountries.includes(this.value)) {
-        shippingCost = 4.5; // Supondo que este seja o valor para países da UE
-      } else {
-        shippingCost = 6.5;
-      }
-  
-      // Calcula o novo total
-      const newTotal = totalBase + shippingCost;
-  
-      // Atualiza o total na página
-      document.getElementById('total_com_envio').textContent = `${newTotal.toFixed(2)}€`;
-    });
-});
-  paypal.Buttons({
-    style: {
-      layout: 'vertical',
-      color: 'blue',
-      shape: 'rect',
-      label: 'paypal'
-    },
-    createOrder: function(data, actions) {
-      return actions.order.create({
-        purchase_units: [{
-          amount: {
-            value: '0.01' // Usa o total atualizado para a transação.
-          }
-        }]
-      });
-    },
-    onApprove: function(data, actions) {
-      return actions.order.capture().then(function(details) {
-        alert('Transação concluída por ' + details.payer.name.given_name);
-      });
-    }
-  }).render('#paypal-button-container');
-  </script>
-  
- 
-   {% endcomment %}
 
    <script src="https://www.paypal.com/sdk/js?client-id=AUuojTUZAwI26K3CFYWSt8XkD7i4sV4GPmQ8v0tk2wLnWoJgyZ5UVDeemKNSvIwBuAPlAPDb5bp1Kqij&currency=EUR"></script>
    <script>

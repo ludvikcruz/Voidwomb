@@ -72,6 +72,8 @@ def adicionar_produto(request):
         form = ProdutoForm(request.POST, request.FILES)  # Inclua request.FILES aqui
         if form.is_valid():
             form.save()
+            # Adiciona uma mensagem de sucesso
+            messages.success(request, 'Produto adicionado com sucesso!')
             return redirect('lista_produtos')
     else:
         form = ProdutoForm()
@@ -85,6 +87,8 @@ def editar_produto(request, id):
         form = ProdutoForm(request.POST, request.FILES, instance=produto)  # Inclua request.FILES aqui
         if form.is_valid():
             form.save()
+            # Adiciona uma mensagem de sucesso
+            messages.success(request, 'Produto editado com sucesso!')
             return redirect('lista_produtos')
     else:
         form = ProdutoForm(instance=produto)
@@ -94,6 +98,8 @@ def eliminar_produto(request, id):
     produto = get_object_or_404(Produto, id=id)
     if request.method == "POST":
         produto.delete()
+        # Adiciona uma mensagem de sucesso
+        messages.success(request, 'Produto eliminado com sucesso!')
         return redirect('lista_produtos')
     return render(request, 'Produto/confirmar_eliminar.html', {'produto': produto})
 
@@ -117,6 +123,8 @@ def adicionar_tamanho(request):
         if form.is_valid():
             tamanho = form.save(commit=False)
             tamanho.save()
+            # Adiciona uma mensagem de sucesso
+            messages.success(request, 'Tamanho adicionado com sucesso!')
             return HttpResponseRedirect(reverse('lista_produtos'))
     else:
         form = ProdutoTamanhoForm()
@@ -128,6 +136,8 @@ def editar_tamanho(request, id):
         form = ProdutoTamanhoForm(request.POST, instance=tamanho)
         if form.is_valid():
             form.save()
+            # Adiciona uma mensagem de sucesso
+            messages.success(request, 'Tamanho editado com sucesso!')
             return HttpResponseRedirect(reverse('lista_produtos'))
     else:
         form = ProdutoTamanhoForm(instance=tamanho)
@@ -138,6 +148,8 @@ def excluir_tamanho(request, id):
     tamanho = get_object_or_404(ProdutoTamanho, id=id)
     if request.method == "POST":
         tamanho.delete()
+        # Adiciona uma mensagem de sucesso
+        messages.success(request, 'Tamanho eliminado com sucesso!')
         return HttpResponseRedirect(reverse('lista_produtos'))
     
     return render(request, 'Produto/confirmar_exclusao_tamanho.html', {'tamanho': tamanho})
@@ -172,6 +184,8 @@ def adm(request):
 
 def logout_view(request):
     logout(request)
+    # Adiciona uma mensagem de sucesso
+    messages.success(request, 'Logout efetuado com sucesso!')
     return HttpResponseRedirect(reverse('home'))
 
 def exportar_produtos_csv(request):
@@ -200,6 +214,8 @@ def paises_adicionar(request):
         form = paisesForm(request.POST)  # Inclua request.FILES aqui
         if form.is_valid():
             form.save()
+           # Adiciona uma mensagem de sucesso
+            messages.success(request, 'País adicionado com sucesso!')
             return HttpResponseRedirect(reverse('listar_paises'))
     else:
         form = paisesForm()
@@ -231,6 +247,8 @@ def editar_pais(request, id):
         form = paisesForm(request.POST, instance=pais)
         if form.is_valid():
             form.save()
+            # Adiciona uma mensagem de sucesso
+            messages.success(request, 'País editado com sucesso!')
             return HttpResponseRedirect(reverse('listar_paises'))
     else:
         form = paisesForm(instance=pais)
@@ -241,6 +259,8 @@ def excluir_pais(request, id):
     pais = get_object_or_404(country, id=id)
     if request.method == "POST":
         pais.delete()
+        # Adiciona uma mensagem de sucesso
+        messages.success(request, 'País eliminado com sucesso!')
         return HttpResponseRedirect(reverse('listar_paises'))
     return render(request, 'Paises/excluirPais.html', {'pais': pais})
 
@@ -256,6 +276,8 @@ def evento_add(request):
         form = EventoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
+            # Adiciona uma mensagem de sucesso
+            messages.success(request, 'Ritual adicionado com sucesso!')
             return HttpResponseRedirect(reverse('lista_eventos'))
     else:
         form = EventoForm()
@@ -267,6 +289,8 @@ def evento_edit(request, pk):
         form = EventoForm(request.POST, request.FILES, instance=evento)
         if form.is_valid():
             form.save()
+            # Adiciona uma mensagem de sucesso
+            messages.success(request, 'Ritual editado com sucesso!')
             return HttpResponseRedirect(reverse('lista_eventos'))
     else:
         form = EventoForm(instance=evento)
@@ -276,6 +300,8 @@ def evento_delete(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
     if request.method == "POST":
         evento.delete()
+        # Adiciona uma mensagem de sucesso
+        messages.success(request, 'Ritual eliminado com sucesso!')
         return HttpResponseRedirect(reverse('lista_eventos'))
     return render(request, 'Eventos/delete.html', {'evento': evento})
 

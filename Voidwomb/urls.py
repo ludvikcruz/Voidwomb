@@ -34,7 +34,7 @@ urlpatterns = [
     path('cart/',views.carrinho,name='carrinho'),
     path('store/product/<int:produto_id>',views.produto,name='produto'),
     path('cart/details',views.pessoa_encomenda,name='pessoa_encomenda'),
-    path('cart/payment/',views.payout,name='pay'),
+    path('cart/deleteA/<int:produto_id>',views.remover_dentro_carrinho,name='removerTdentro'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

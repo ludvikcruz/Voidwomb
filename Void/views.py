@@ -1,10 +1,11 @@
 import json
 from django.shortcuts import get_object_or_404, render,redirect
-
+from django.urls import reverse
+from django.contrib import messages
 from payment.carrinho import add_to_cart
 from .models import Evento, Produto, ProdutoTamanho, country
 from django.core.mail import send_mail
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 
 def index(request):
     return render(request,'index.html')
@@ -35,7 +36,7 @@ def rituals(request):
     return render(request,'rituals.html',{'eventos':eventos})
 
 def store(request):
-    produtos = Produto.objects.all()
+    produtos = Produto.objects.filter(stock__gt=0)
     
     
     return render(request,'store.html',{'produtos':produtos})
@@ -46,29 +47,50 @@ def about(request):
 def adicionar_ao_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
 
-    product_id_str = str(produto_id)  # Certifique-se de que o ID seja uma string para evitar problemas de chave em dicionários.
-    if product_id_str in cart:
-        cart[product_id_str] += 1
-    else:
-        cart[product_id_str] = 1
+    # Busca o produto pelo ID ou retorna uma resposta 404 se não encontrado
+    produto = get_object_or_404(Produto, id=produto_id)
 
-    request.session['carrinho'] = cart
+    product_id_str = str(produto_id)  # Certifique-se de que o ID seja uma string para evitar problemas de chave em dicionários.
+    
+    # Verifica se o produto já está no carrinho e se tem estoque suficiente
+    quantidade_atual = cart.get(product_id_str, 0)
+    if quantidade_atual < produto.stock:  # Verifica o estoque antes de adicionar ou incrementar
+        if product_id_str in cart:
+            cart[product_id_str] += 1
+        else:
+            messages.error(request,'Pedido acima do stock atual, atualmente temos '+ produto.stock + ' em stock')
+            cart[product_id_str] = 1
+        request.session['carrinho'] = cart
+        # Você pode adicionar alguma mensagem de sucesso aqui
+    else:
+        # Aqui você pode retornar uma mensagem de erro indicando que não há estoque suficiente
+        pass
+
     return redirect('store')
 
 def adicionar_dentro_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
-    if request.method == 'POST':
-        product_id_str = str(produto_id)  # Convert product ID to string to use as a dictionary key.
-        quantity = int(request.POST.get('quantity'))  # Get quantity from request, default to 1 if not provided.
 
+    # Busca o produto pelo ID ou retorna uma resposta 404 se não encontrado
+    produto = get_object_or_404(Produto, id=produto_id)
+
+    product_id_str = str(produto_id)  # Certifique-se de que o ID seja uma string para evitar problemas de chave em dicionários.
+    
+    # Verifica se o produto já está no carrinho e se tem estoque suficiente
+    quantidade_atual = cart.get(product_id_str, 0)
+    if quantidade_atual < produto.stock:  # Verifica o estoque antes de adicionar ou incrementar
         if product_id_str in cart:
-            cart[product_id_str] += quantity
+            cart[product_id_str] += 1
         else:
-            cart[product_id_str] = quantity
+            messages.error(request,'Pedido acima do stock atual, atualmente temos '+ produto.stock + ' em stock')
+            cart[product_id_str] = 1
+        request.session['carrinho'] = cart
+        # Você pode adicionar alguma mensagem de sucesso aqui
+    else:
+        # Aqui você pode retornar uma mensagem de erro indicando que não há estoque suficiente
+        pass
 
-        request.session['carrinho'] = cart  # Update the session with the new cart state.
-        return redirect('carrinho')
-
+    return redirect('carrinho')
 
 def remover_do_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
@@ -81,7 +103,7 @@ def remover_do_carrinho(request, produto_id):
             del cart[product_id_str]  # Remove o item do carrinho se a quantidade for 1 ou menos
 
     request.session['carrinho'] = cart
-    return redirect('carrinho')
+    return HttpResponseRedirect(reverse('carrinho'))
 
 def carrinho(request):
     countrys = country.objects.all()
@@ -119,35 +141,9 @@ def pessoa_encomenda(request):
 
 def payout(request):
     return render(request,'store/payment.html')
-from django.http import JsonResponse
-from .models import Produto
 
-def verificar_estoque(request):
-    if request.method == 'POST':
-        dados = json.loads(request.body)
-        itens = dados.get('itens', [])
-        problemas_estoque = []
 
-        for item in itens:
-            produto_id = item.get('id')
-            quantidade_requerida = item.get('quantidade')
-            try:
-                produto = Produto.objects.get(id=produto_id)
-                if produto.quantidade < quantidade_requerida:
-                    problemas_estoque.append({
-                        'id': produto_id,
-                        'nome': produto.nome,
-                        'quantidade_disponivel': produto.quantidade
-                    })
-            except Produto.DoesNotExist:
-                problemas_estoque.append({'id': produto_id, 'erro': 'Produto não encontrado'})
 
-        if problemas_estoque:
-            return JsonResponse({'sucesso': False, 'problemas_estoque': problemas_estoque})
-        
-        return JsonResponse({'sucesso': True})
-
-    return JsonResponse({'erro': 'Método inválido'}, status=400)
 
 
 

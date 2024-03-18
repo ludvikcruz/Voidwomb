@@ -14,19 +14,27 @@ paypalrestsdk.configure({
 
 def get_paypal_items_from_cart(request):
     carrinho = request.session.get('carrinho', {})
+    if not carrinho:
+        return [], 0  # Retorna listas vazias se o carrinho não existir ou estiver vazio
+
     itens_paypal = []
     total = 0
     for produto_id, quantidade in carrinho.items():
-        produto = Produto.objects.get(id=produto_id)
-        subtotal = produto.preco * quantidade
-        total += subtotal
-        itens_paypal.append({
-            "name": produto.nome,
-            "sku": produto_id,
-            "price": str(produto.preco),
-            "currency": "EUR",
-            "quantity": quantidade,
-        })
+        try:
+            produto = Produto.objects.get(id=produto_id)
+            subtotal = produto.preco * quantidade
+            total += subtotal
+            itens_paypal.append({
+                "name": produto.nome,
+                "sku": produto_id,
+                "price": str(produto.preco),
+                "currency": "EUR",
+                "quantity": quantidade,
+            })
+        except Produto.DoesNotExist:
+            # Handle the case where the product does not exist.
+            continue  # ou adicione uma lógica para lidar com produtos não encontrados
+
     return itens_paypal, total
 
 def create_payment(request):
@@ -37,8 +45,8 @@ def create_payment(request):
             "payment_method": "paypal",
         },
         "redirect_urls": {
-            "return_url": "http://localhost:8000/payment/execute/",
-            "cancel_url": "http://localhost:8000/payment/cancel/",
+            "return_url": "http://127.0.0.1:8000/payment/execute/",
+            "cancel_url": "http://127.0.0.1:8000/payment/cancel/",
         },
         "transactions": [{
             "item_list": {
@@ -46,7 +54,7 @@ def create_payment(request):
             },
             "amount": {
                 "total": f"{total:.2f}",
-                "currency": "USD",
+                "currency": "EUR",
             },
             "description": "Descrição da compra no carrinho.",
         }]

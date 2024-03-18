@@ -132,7 +132,7 @@
             <span>With shipping</span>
             <span id="total_com_envio">{{ total }}€</span>
           </div>
-          <button class="text-white bg-indigo-500 font-semibold hover:bg-indigo-600 py-3 text-sm text-white uppercase w-full mb-4">Checkout</button>
+          <div id="paypal-button-container"></div>
         </div>
       </div>
     </div>
@@ -165,6 +165,36 @@
     });
 });
   </script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AZIqzSlWW4eLADMUgxN-i-OmL-hjkDKSonPLz3t6cEyJSsaakgDeV_U5ZUQRIoKuClyuN6bJKkCJN0qD&components=buttons"></script>
+
+  <script>
+    paypal.Buttons({
+        style: {
+          layout: 'vertical',
+          color: 'silver',
+          shape: 'pill',
+          label: 'paypal'
+        },
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: '0.01' // Substitua isso pelo valor calculado com base no carrinho
+              }
+            }]
+          });
+        },
+      onApprove: function(data, actions) {
+        // Captura os fundos da transação
+        return actions.order.capture().then(function(details) {
+          // Mostra uma mensagem de sucesso para o comprador
+          alert('Transaction completed by ' + details.payer.name.given_name);
+          // Aqui, você pode redirecionar o usuário ou atualizar a página para mostrar o status do pagamento
+        });
+      }
+      
+    }).render('#paypal-button-container');
+    </script>
   
 
     

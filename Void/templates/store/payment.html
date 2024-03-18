@@ -10,7 +10,6 @@
       </div>
 <script src="https://www.paypal.com/sdk/js?client-id=AZIqzSlWW4eLADMUgxN-i-OmL-hjkDKSonPLz3t6cEyJSsaakgDeV_U5ZUQRIoKuClyuN6bJKkCJN0qD&components=buttons"></script>
 <script>
-   
     paypal.Buttons({
         style: {
           layout: 'vertical',
@@ -22,20 +21,20 @@
           return actions.order.create({
             purchase_units: [{
               amount: {
-                value: '0.01' // Você deverá calcular este valor com base no carrinho
+                value: '0.01' // Substitua isso pelo valor calculado com base no carrinho
               }
             }]
           });
         },
       onApprove: function(data, actions) {
-        // Capture the funds from the transaction
+        // Captura os fundos da transação
         return actions.order.capture().then(function(details) {
-          // Show a success message to your buyer
+          // Mostra uma mensagem de sucesso para o comprador
           alert('Transaction completed by ' + details.payer.name.given_name);
           // Aqui, você pode redirecionar o usuário ou atualizar a página para mostrar o status do pagamento
         });
       }
       
     }).render('#paypal-button-container');
-  </script>
+    </script>
 {% endblock content %}

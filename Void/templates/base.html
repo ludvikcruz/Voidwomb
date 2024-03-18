@@ -39,7 +39,8 @@
     </style>
 </head>
 
-<body>
+<body class="flex flex-col min-h-screen">
+    <div class="flex-1">
     <div class="background-blur"></div><!-- Div com o background desfocado -->
     {% include 'nav_footer/nav.html' %}
     {% if messages %}
@@ -84,6 +85,8 @@
         {% endblock content %}
     </div>
 
+
+</div>
     {% include 'nav_footer/footer.html' %}
 </body>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>

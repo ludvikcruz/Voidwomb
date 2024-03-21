@@ -48,7 +48,7 @@
             {% if produto.stock >= 1 and produto.categoria != 'roupa' %}
             <div class="mb-4">In stock {{produto.stock}}</div>
             {% endif %}
-            <form action="{% url 'adicionar_dentro_carrinho' produto.id %}" method="post" class="space-y-4">
+            <form action="{% url 'adicionar_roupa' produto.id %}" method="post" class="space-y-4">
                 {% csrf_token %}
             {% if produto.categoria == "roupa" %}
                 <div class="mb-6 w-20">

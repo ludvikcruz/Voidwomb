@@ -56,7 +56,8 @@ class ProdutoTamanho(models.Model):
         ('XXL', 'XXL'),
     ]
     # Aqui a ForeignKey deve apontar para Produto, como já está, mas sem o sublinhado no nome do campo
-    produto_id = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='tamanhos')
+    id = models.AutoField(primary_key=True)
+    produto = models.ForeignKey(Produto, on_delete=models.CASCADE, related_name='tamanhos')
     tamanho = models.CharField(max_length=50, choices=TAMANHOS)
     stock_por_tamanho = models.IntegerField()
 

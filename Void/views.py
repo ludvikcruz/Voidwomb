@@ -46,7 +46,7 @@ def about(request):
     return render(request,'about.html')
 
 @require_POST  # Assegura que esta view só possa ser acessada via método POST
-def adicionar_dentro_carrinho(request, produto_id):
+def adicionar_ao_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
 
     produto = get_object_or_404(Produto, id=produto_id)

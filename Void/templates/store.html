@@ -34,9 +34,9 @@
 
 <nav class="mt-4 flex justify-center" aria-label="Page navigation example">
   <ul class="flex items-center space-x-px h-10 text-base">
-    {% if eventos.has_previous %}
+    {% if produtos.has_previous %}
     <li>
-      <a href="?page={{ eventos.previous_page_number }}" class="flex items-center justify-center px-4 h-10 leading-tight text-white bg-transparent border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white">
+      <a href="?page={{ produtos.previous_page_number }}" class="flex items-center justify-center px-4 h-10 leading-tight text-white bg-transparent border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white">
         <span class="sr-only">Previous</span>
         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
@@ -44,8 +44,8 @@
       </a>
     </li>
     {% endif %}
-    {% for num in eventos.paginator.page_range %}
-      {% if eventos.number == num %}
+    {% for num in produtos.paginator.page_range %}
+      {% if produto.number == num %}
         <!-- Página atual -->
         <li>
           <a href="#" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-700 bg-gray-300 border border-gray-300 dark:bg-gray-700 dark:border-gray-700">{{ num }}</a>
@@ -57,9 +57,9 @@
         </li>
       {% endif %}
     {% endfor %}
-    {% if eventos.has_next %}
+    {% if produtos.has_next %}
     <li>
-      <a href="?page={{ eventos.next_page_number }}" class="flex items-center justify-center px-4 h-10 leading-tight text-white bg-transparent border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white">
+      <a href="?page={{ produtos.next_page_number }}" class="flex items-center justify-center px-4 h-10 leading-tight text-white bg-transparent border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white">
        <span class="sr-only">Next</span>
         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>

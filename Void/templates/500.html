@@ -1,0 +1,55 @@
+{% load compress %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@1.6.0/dist/flowbite.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'Void/favicon.ico' %}">
+
+    <title>Voidwomb</title>
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'src/css/output.css' %}">
+    {% endcompress %}
+    <style>
+        .background-blur {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url('{% static "src/img/Voidwomb-foto.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(8px);
+        }
+        .content-container {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>    
+    <section class="h-screen flex items-center justify-center">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+            <div class="mx-auto max-w-screen-sm text-center">
+                <h1 class="mb-4 text-7xl tracking-tight font-extrabold lg:text-9xl text-primary-600 text-white dark:text-primary-500">500</h1>
+                <p class="mb-4 text-3xl tracking-tight font-bold text-white md:text-4xl dark:text-white">Internal Server Error.</p>
+                <p class="mb-4 text-lg font-light text-white dark:text-gray-400">We are already working to solve the problem. </p>
+            </div>
+        </div>
+    </section>
+    
+    <div class="background-blur"></div>
+</body>
+</html>

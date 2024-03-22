@@ -74,6 +74,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'Adm.middleware.AdminRequiredMiddleware',
+    'Void.middleware.Custom404Middleware',
 ]
 
 ROOT_URLCONF = 'Voidwomb.urls'

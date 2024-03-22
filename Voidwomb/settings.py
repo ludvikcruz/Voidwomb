@@ -155,6 +155,10 @@ STATICFILES_FINDERS = [
     # Other finders...
     'compressor.finders.CompressorFinder',
 ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -163,6 +167,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 COMPRESS_URL = '/static/'
 COMPRESS_ROOT = 'Void/static'
+
+
 COMPRESS_ENABLED = True
 COMPRESS_STORAGE = 'compressor.storage.GzipCompressorFileStorage'
 
@@ -173,8 +179,5 @@ STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
-
 
  

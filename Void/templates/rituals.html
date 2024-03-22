@@ -3,7 +3,7 @@
 {% load static %}
 {% if eventos %}
 <!-- Definição da grid uma única vez antes do início do loop -->
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+<div class="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
   {% for evento in eventos %}
   <!-- Cada card é um item da grid -->
   <div class="flex flex-col bg-gray-900 rounded-lg shadow-lg overflow-hidden">
@@ -32,7 +32,7 @@
 </div> <!-- Fechamento da grid após o loop -->
 {% endif %}
 
-<nav class="flex justify-center" aria-label="Page navigation example">
+<nav class="mt-4 flex justify-center" aria-label="Page navigation example">
   <ul class="flex items-center space-x-px h-10 text-base">
     <li>
       <a href="#" class="flex items-center justify-center px-4 h-10 leading-tight text-white bg-transparent border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white">
@@ -69,7 +69,7 @@
   </ul>
 </nav>
 
-<div class="flex justify-center items-center text-4xl font-bold text-white mt-8">
+<div class="flex justify-center items-center text-4xl font-bold text-white mt-8 mb-8">
   More news soon...
 </div>
 {% endblock content %}

@@ -108,11 +108,11 @@ def adicionar_roupa(request, produto_id):
 
     # Verifica estoque
     if cart[chave_carrinho]['quantidade'] > tamanho_objeto.stock_por_tamanho:
-        messages.error(request, f'Não é possível adicionar a quantidade desejada ao carrinho. Estoque disponível para o tamanho {tamanho_objeto.tamanho}: {tamanho_objeto.stock_por_tamanho}.')
+        messages.error(request, f'It is not possible to add the desired quantity to the cart. Available stock for the size {tamanho_objeto.tamanho}: {tamanho_objeto.stock_por_tamanho}.')
         return redirect('carrinho')
 
     request.session['carrinho'] = cart
-    messages.success(request, f'{quantidade_a_adicionar} unidades de {produto.nome} ({tamanho_objeto.tamanho}) adicionadas ao carrinho.')
+    messages.success(request, f'{quantidade_a_adicionar} pieces of {produto.nome} ({tamanho_objeto.tamanho}) added to the cart.')
     return redirect('store')
 
    
@@ -128,18 +128,18 @@ def adicionar_roupa_dentro_carrinho(request, produto_id):
         # Incrementa a quantidade do produto
         cart[chave_carrinho]['quantidade'] += 1
     else:
-        messages.error(request, 'O produto não está presente no carrinho.')
-        return redirect('carrinho')
+        cart[chave_carrinho] = {'quantidade': quantidade_a_adicionar, 'tamanho': tamanho if tamanho else 'único'}
 
-    # Atualiza a sessão do carrinho
+    # Verifica estoque se necessário
+    if tamanho:
+        tamanho_objeto = get_object_or_404(ProdutoTamanho, produto=produto, tamanho=tamanho)
+        if cart[chave_carrinho]['quantidade'] >= tamanho_objeto.stock_por_tamanho:
+            messages.error(request, f'It is not possible to add the desired quantity to the cart. Available stock for the size {tamanho}: {tamanho_objeto.estoque}.')
+            return HttpResponseRedirect(reverse('carrinho'))
+
     request.session['carrinho'] = cart
-
-    # Mensagem de sucesso
-    messages.success(request, f'1 unidade de {produto.nome} adicionada ao carrinho.')
-
-    # Redireciona para a página da loja
-    return redirect('carrinho')
-
+    messages.success(request, f'{quantidade_a_adicionar} pieces of {produto.nome} added to the cart.')
+    return HttpResponseRedirect(reverse('carrinho'))
 
 
 def remover_do_carrinho(request, produto_id):
@@ -233,7 +233,7 @@ def carrinho(request):
         quantidade = info_produto['quantidade']  
 
         if quantidade > produto.stock:
-            messages.error(request, f'Stock insuficiente para {produto.nome}. Disponíveis: {produto.stock}.')
+            messages.error(request, f'Not enough stock of {produto.nome}. Available: {produto.stock}.')
             # Adiciona ao carrinho mas marca como inativo e não adiciona ao total
             itens_carrinho.append({
                 'produto_id': produto.id,

@@ -1,0 +1,9 @@
+{% extends "_base.html" %}
+{% block conteudo %}
+<form method="post">
+  {% csrf_token %}
+  <p>Tem certeza que deseja excluir "{{ pais.nome }}"?</p>
+  <button type="submit">Confirmar</button>
+  <a href="{% url 'listar_paises' %}">Cancelar</a>
+</form>
+{% endblock %}

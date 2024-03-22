@@ -165,8 +165,8 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# COMPRESS_URL = '/static/'
-# COMPRESS_ROOT = 'Void/static'
+COMPRESS_URL = '/static/'
+COMPRESS_ROOT = 'Void/static'
 
 
 COMPRESS_ENABLED = True
@@ -176,17 +176,8 @@ COMPRESS_STORAGE = 'compressor.storage.GzipCompressorFileStorage'
 
 STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
 
-STATIC_ROOT = 'Void/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
-STATIC_URL = '/static/'
-
-
-COMPRESS_URL = STATIC_URL
-COMPRESS_ROOT = STATIC_ROOT
-
 
  

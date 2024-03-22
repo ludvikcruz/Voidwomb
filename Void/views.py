@@ -33,12 +33,19 @@ def contact(request):
     return render(request,'contact.html')
 
 def rituals(request):
-    eventos = Evento.objects.all()
-    return render(request,'rituals.html',{'eventos':eventos})
+    eventos_list = Evento.objects.all()
+    paginator = Paginator(eventos_list, 4)  # Mostra 10 eventos por página
+
+    page_number = request.GET.get('page')  # Pega o número da página do query string
+    eventos = paginator.get_page(page_number)
+
+    return render(request, 'rituals.html', {'eventos': eventos})
 
 def store(request):
-    produtos = Produto.objects.filter(stock__gt=0)
-    
+    produtos_list = Produto.objects.filter(stock__gt=0)
+    paginator = Paginator(produtos_list, 4)
+    page_number = request.GET.get('page')
+    produtos = paginator.get_page(page_number)
     
     return render(request,'store.html',{'produtos':produtos})
 
@@ -115,32 +122,6 @@ def adicionar_roupa(request, produto_id):
     messages.success(request, f'{quantidade_a_adicionar} pieces of {produto.nome} ({tamanho_objeto.tamanho}) added to the cart.')
     return redirect('store')
 
-   
-# def adicionar_roupa_dentro_carrinho(request, produto_id):
-#     cart = request.session.get('carrinho', {})
-#     produto = get_object_or_404(Produto, id=produto_id)
-    
-#     # Define a chave do carrinho baseada no ID do produto
-#     chave_carrinho = f"{produto_id}"
-
-#     # Verifica se o produto está presente no carrinho
-#     if chave_carrinho in cart:
-#         # Incrementa a quantidade do produto
-#         cart[chave_carrinho]['quantidade'] += 1
-#     else:
-#         cart[chave_carrinho] = {'quantidade': quantidade_a_adicionar, 'tamanho': tamanho if tamanho else 'único'}
-
-#     # Verifica estoque se necessário
-#     if tamanho:
-#         tamanho_objeto = get_object_or_404(ProdutoTamanho, produto=produto, tamanho=tamanho)
-#         if cart[chave_carrinho]['quantidade'] >= tamanho_objeto.stock_por_tamanho:
-#             messages.error(request, f'It is not possible to add the desired quantity to the cart. Available stock for the size {tamanho}: {tamanho_objeto.estoque}.')
-#             return HttpResponseRedirect(reverse('carrinho'))
-
-#     request.session['carrinho'] = cart
-#     messages.success(request, f'{quantidade_a_adicionar} pieces of {produto.nome} added to the cart.')
-#     return HttpResponseRedirect(reverse('carrinho'))
-
 
 def adicionar_roupa_dentro_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
@@ -196,48 +177,6 @@ def remover_roupa_do_carrinho(request, produto_id, tamanho_id=None):
 
 
 
-
-# def carrinho(request):
-#     countrys = country.objects.all()
-#     cart = request.session.get('carrinho', {})
-#     itens_carrinho = []
-#     total = 0
-#     print(cart)
-#     for chave, info_produto in cart.items():
-#         produto_id, tamanho_id = chave.split('_') if '_' in chave else (chave, None)
-#         produto = get_object_or_404(Produto, id=produto_id)
-#         tamanho = get_object_or_404(ProdutoTamanho, id=tamanho_id) if tamanho_id else None
-#         quantidade = info_produto['quantidade']  
-#         if quantidade > produto.stock:
-#             messages.error(request, f'Stock insuficiente para {produto.nome}. Disponíveis: {produto.stock}.')
-#             # Adiciona ao carrinho mas marca como inativo e não adiciona ao total
-#             itens_carrinho.append({
-#                 'produto_id': produto.id,
-#                 'produto': produto,
-#                 'quantidade': quantidade,
-#                 'subtotal': produto.preco * min(quantidade, produto.stock),
-#                 'tamanho': tamanho,
-#                 'tamanho_nome': tamanho.tamanho if tamanho else 'único',
-#                 'ativo': False,  
-#             })
-#         else:
-#             subtotal = produto.preco * quantidade
-#             total += subtotal  
-#             itens_carrinho.append({
-#                 'produto_id': produto.id,
-#                 'produto': produto,
-#                 'quantidade': quantidade,
-#                 'subtotal': subtotal,
-#                 'tamanho': tamanho,
-#                 'tamanho_nome': tamanho.tamanho if tamanho else 'único',
-#                 'ativo': True,
-#             })
-
-#     return render(request, 'store/dados_encomenda.html', {
-#         'itens_carrinho': itens_carrinho,
-#         'total': total,
-#         'countrys': countrys,
-#     })
 def carrinho(request):
     countrys = country.objects.all()
     cart = request.session.get('carrinho', {})

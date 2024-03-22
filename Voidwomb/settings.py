@@ -44,7 +44,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3vndy%grhk*7v(et3lpwn1+0_-)776klg0@6vx)#2krt==^@z9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -155,14 +155,20 @@ STATICFILES_FINDERS = [
     # Other finders...
     'compressor.finders.CompressorFinder',
 ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-COMPRESS_URL = '/static/'
-COMPRESS_ROOT = 'Void/static'
+# COMPRESS_URL = '/static/'
+# COMPRESS_ROOT = 'Void/static'
+
+
 COMPRESS_ENABLED = True
 COMPRESS_STORAGE = 'compressor.storage.GzipCompressorFileStorage'
 
@@ -170,11 +176,17 @@ COMPRESS_STORAGE = 'compressor.storage.GzipCompressorFileStorage'
 
 STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
 
+STATIC_ROOT = 'Void/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
+STATIC_URL = '/static/'
+
+
+COMPRESS_URL = STATIC_URL
+COMPRESS_ROOT = STATIC_ROOT
 
 
  

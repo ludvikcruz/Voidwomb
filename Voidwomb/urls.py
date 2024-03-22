@@ -34,7 +34,7 @@ urlpatterns = [
     
     
     
-    #PathsAdm/ dos produtos
+    #Paths dos produtos
     path('Adm/produtos/adicionar/', views.adicionar_produto, name='adicionar_produto'),
     path('Adm/produtos/editar/<int:id>/', views.editar_produto, name='editar_produto'),
     path('Adm/produtos/eliminar/<int:id>/', views.eliminar_produto, name='eliminar_produto'),
@@ -47,18 +47,18 @@ urlpatterns = [
     path('Adm/produtos/tamanho/excluir/<int:id>/', views.excluir_tamanho, name='excluir_tamanho'),
     
     
-    #PathsAdm/ dos users
+    #Paths dos users
     path('Adm/users/login',views.login_view,name ='login'),
     path('Adm/users/logout',views.logout_view,name ='logout'),
  
-    #path Adm/paises
+    #path paises
     path('Adm/paises/', views.listar_paises, name='listar_paises'),
     path('Adm/paises/adicionar',views.paises_adicionar,name ='adicionar_paises'),
     path('Adm/paises/editar/<int:id>/', views.editar_pais, name='editar_pais'),
     path('Adm/paises/excluir/<int:id>/', views.excluir_pais, name='excluir_pais'),
     path('Adm/paises/import-countries/', views.listar_paises, name='import_countries'),
 
-    #pathsAdm/ dos eventos
+    #paths dos eventos
     path('Adm/eventos/', views.lista_eventos, name='lista_eventos'),
     path('Adm/eventos/add/', views.evento_add, name='evento_add'),
     path('Adm/eventos/edit/<int:pk>/', views.evento_edit, name='evento_edit'),
@@ -66,7 +66,7 @@ urlpatterns = [
     path('Adm/eventos/exportar-eventos-csv/', views.exportar_eventos_para_csv, name='exportar_eventos_csv'),
 
     
-    
+    #path carrinho de compras
     path('cart/add/<int:produto_id>/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
     path('cart/ad/<int:produto_id>/', views.adicionar_dentro_carrinho, name='adicionar_dentro_carrinho'),
     path('cart/add/clothes/<int:produto_id>',views.adicionar_roupa_dentro_carrinho, name = 'adicionar_roupa_dentro'),
@@ -77,6 +77,9 @@ urlpatterns = [
     path('store/product/<int:produto_id>',views.produto,name='produto'),
     path('cart/details',views.pessoa_encomenda,name='pessoa_encomenda'),
     path('cart/deleteA/<int:produto_id>',views.remover_dentro_carrinho,name='removerTdentro'),
+    
+    #path de pagamento
+    path('registrar-pagamento/', views.registrar_pagamento, name='registrar_pagamento'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

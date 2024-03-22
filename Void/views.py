@@ -3,10 +3,18 @@ from django.shortcuts import get_object_or_404, render,redirect
 from django.urls import reverse
 from django.contrib import messages
 from payment.carrinho import add_to_cart
+from payment.models import Pagamento
 from .models import Evento, Produto, ProdutoTamanho, country
 from django.core.mail import send_mail
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
+import re
+from django.http import JsonResponse
+
+
 
 def index(request):
     return render(request,'index.html')
@@ -54,7 +62,7 @@ def about(request):
 
 def adicionar_ao_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
-
+    produto = get_object_or_404(Produto, id=produto_id)
     product_id_str = str(produto_id)
     if product_id_str in cart:
         # Verifica se o valor correspondente a product_id_str é um dicionário
@@ -62,9 +70,21 @@ def adicionar_ao_carrinho(request, produto_id):
             cart[product_id_str]['quantidade'] += 1
         else:
             # Se for um inteiro, substitui por um dicionário
-            cart[product_id_str] = {'quantidade': cart[product_id_str] + 1, 'tamanho': 'único'}
+            cart[product_id_str] = {
+                'quantidade': cart[product_id_str] + 1, 'tamanho': 'único',
+                                    'nome': produto.nome,
+                                    'size': 'unico',
+                                    'preco': str(produto.preco),
+                                    'sku': produto.sku,
+                                    'categoria': produto.categoria}
     else:
-        cart[product_id_str] = {'quantidade': 1, 'tamanho': 'único'}
+        cart[product_id_str] = {'quantidade': 1, 'tamanho': 'único',
+                                    'nome': produto.nome,
+                                    'size': 'unico',
+                                    'preco': str(produto.preco),
+                                    'sku': produto.sku,
+                                    'categoria': produto.categoria
+                                    }
 
     request.session['carrinho'] = cart
     return redirect('store')
@@ -72,6 +92,7 @@ def adicionar_ao_carrinho(request, produto_id):
 
 
 def adicionar_dentro_carrinho(request, produto_id):
+    produto = get_object_or_404(Produto, id=produto_id)
     cart = request.session.get('carrinho', {})
 
     product_id_str = str(produto_id)
@@ -81,9 +102,21 @@ def adicionar_dentro_carrinho(request, produto_id):
             cart[product_id_str]['quantidade'] += 1
         else:
             # Se for um inteiro, substitui por um dicionário
-            cart[product_id_str] = {'quantidade': cart[product_id_str] + 1, 'tamanho': 'único'}
+            cart[product_id_str] = {'quantidade': cart[product_id_str] + 1, 'tamanho': 'único',
+                                    'size': 'unico',
+                                    'nome': produto.nome,
+                                    'preco': str(produto.preco),
+                                    'sku': produto.sku,
+                                    'categoria': produto.categoria
+                                    }
     else:
-        cart[product_id_str] = {'quantidade': 1, 'tamanho': 'único'}
+        cart[product_id_str] = {'quantidade': 1, 'tamanho': 'único',
+                                    'size': 'unico',
+                                    'nome': produto.nome,
+                                    'preco': str(produto.preco),
+                                    'sku': produto.sku,
+                                    'categoria': produto.categoria
+                                    }
 
     request.session['carrinho'] = cart
     return redirect('carrinho')
@@ -111,7 +144,15 @@ def adicionar_roupa(request, produto_id):
     if chave_carrinho in cart:
         cart[chave_carrinho]['quantidade'] += quantidade_a_adicionar
     else:
-        cart[chave_carrinho] = {'quantidade': quantidade_a_adicionar, 'tamanho': tamanho_id}
+        cart[chave_carrinho] = {
+            'nome': produto.nome,
+            'tamanho': tamanho_id,
+            'size':tamanho_objeto.tamanho,
+            'quantidade': quantidade_a_adicionar,
+            'sku': produto.sku,
+            'preco': str(produto.preco),
+            'categoria': produto.categoria
+            }
 
     # Verifica estoque
     if cart[chave_carrinho]['quantidade'] > tamanho_objeto.stock_por_tamanho:
@@ -597,3 +638,61 @@ def exportar_eventos_para_csv(request):
         ])
 
     return response
+
+
+
+
+
+@csrf_exempt
+def registrar_pagamento(request):
+    # Captura o token único do cabeçalho da solicitação
+    token_unico = request.headers.get('Token-Unico')
+
+    #Valida o formato do token único
+    if not token_unico or not re.match(r'^tkn_[a-zA-Z0-9]+$', token_unico):
+        return JsonResponse({"erro": "Token inválido ou ausente."}, status=400)
+
+    try:
+        data = json.loads(request.body)
+
+        # Prossegue para criar o registro de pagamento apenas se o token é válido
+        pagamento = Pagamento.objects.create(
+            order_id=data['orderID'],
+            email=data['customerInfo']['email'],
+            endereco=data['customerInfo']['address'],
+            codigo_postal=data['customerInfo']['postalCode'],
+            cidade=data['customerInfo']['city'],
+            total=data['carrinho']['total']
+        )
+        
+        for item in data['carrinho']['itens']:
+                produto = Produto.objects.get(id=item['produto_id'])
+                quantidade_vendida = item['quantidade']
+                tamanho_nome = item.get('tamanho')  # Pode ser None se não aplicável
+
+                if tamanho_nome:
+                    tamanho = ProdutoTamanho.objects.get(produto=produto, nome=tamanho_nome)
+                    if tamanho.estoque >= quantidade_vendida:
+                        tamanho.estoque -= quantidade_vendida
+                        tamanho.save()
+                        produto.estoque_total -= quantidade_vendida  # Atualiza estoque total
+                        produto.save()
+                        full_message = f"Encomenda numero - {data['orderID']}\nEmail - {data['customerInfo']['email']}\nEndereço - {data['customerInfo']['address']}\nCodigo Postal - {data['customerInfo']['postalCode']}\nCidade - {data['customerInfo']['city']}"
+                        send_mail(
+                            subject="Encomenda de cliente",
+                            message=full_message,
+                            from_email='voidwomb.band@gmail.com',
+                            recipient_list=['voidwomb.band@gmail.com'],  # Substitua pelo e-mail que receberá a mensagem
+                        )
+                    else:
+                        raise ValueError("Estoque insuficiente para o tamanho selecionado.")
+                else:
+                    if produto.estoque_total >= quantidade_vendida:
+                        produto.estoque_total -= quantidade_vendida
+                        produto.save()
+                    else:
+                        raise ValueError("Estoque insuficiente para o produto selecionado.")
+
+        return JsonResponse({"mensagem": "Pagamento registrado, estoque atualizado."}, status=201)
+    except Exception as e:
+        return JsonResponse({"erro": str(e)}, status=400)

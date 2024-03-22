@@ -202,33 +202,36 @@
         // Re-renderiza o botão do PayPal com o novo total
         renderPayPalButton(newTotal.toFixed(2));
       });
-      function gerarTokenUnico() {
-        return 'tkn_' + Math.random().toString(36).substr(2) + new Date().getTime().toString(36);
+      function getCarrinhoCookie() {
+        // Nome da cookie que você quer buscar
+        const name = 'carrinho';
+        // Decodifica o valor da cookie e divide em um array
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') {
+                c = c.substring(1);
+            }
+            // Verifica se o nome da cookie está no início da string
+            if (c.indexOf(name) === 0) {
+                // Extrai o valor da cookie e converte de JSON para um objeto JavaScript
+                return JSON.parse(c.substring(name.length, c.length));
+            }
+        }
+        // Retorna um objeto vazio se a cookie não for encontrada
+        return {};
     }
-    function coletarDadosDoFormulario() {
-      return {
-          name: document.getElementById('customer-name').value,
-          email: document.getElementById('email').value,
-          address: document.getElementById('address').value,
-          postalCode: document.getElementById('postal-code').value,
-          city: document.getElementById('city').value,
-          carrinho: obterDetalhesDoCarrinho() // Implemente esta função conforme sua lógica de carrinho
-      };
-  }
-  function getCookie(name) {
-    let nameEQ = name + "=";
-    let ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-}
+    
+    // Usando a função para obter o carrinho
+    const carrinho = getCarrinhoCookie();
+    console.log(carrinho);
+    
       // Função para re-renderizar o botão do PayPal com o valor atualizado
       function renderPayPalButton(newTotal) {
         if (window.paypal) {
-          // Limpa o container do botão para preparar para nova renderização
+          const cartCookie = getCarrinhoCookie();
+          const cartItems = cartCookie ? JSON.parse(cartCookie) : {};
           document.getElementById('paypal-button-container').innerHTML = '';
           paypal.Buttons({
             style: {
@@ -238,46 +241,47 @@
               label: 'paypal'
             },
             createOrder: function(data, actions) {
+              
               return actions.order.create({
                 purchase_units: [{
                   amount: {
-                    value: newTotal // Usa o novo total para a transação
-                  }
-                }]
+                      currency_code: "EUR",
+                      value: '0.01', // Substitua '0.01' pelo total do pedido
+                      breakdown: {
+                          item_total: {  // Somatório dos itens, deve ser igual ao valor total se não houver outros custos
+                              currency_code: "EUR",
+                              value: '0.01' // Substitua '0.01' pelo somatório dos itens
+                          }
+                      }
+                  },
+                  items: Object.values(cartItems).map(item => ({ 
+                    name: item.nome,
+                    description: item.descricao, // Corrigido de 'item.size' para 'item.descricao'
+                    sku: item.sku,
+                    unit_amount: {
+                        currency_code: "EUR",
+                        value: item.preco // Assegura que o preço é uma string
+                    },
+                    quantity: item.quantidade.toString() // Assegura que a quantidade é uma string
+                }))
+              }]
               });
             },
             onApprove: function(data, actions) {
               return actions.order.capture().then(function(details) {
-                // Gera um token único para esta compra
-                const tokenUnico = gerarTokenUnico();
-                const dadosDoFormulario = coletarDadosDoFormulario();
-                const dadosDoCarrinho = getCookie('carrinho');
-                const carrinho = dadosDoCarrinho ? JSON.parse(dadosDoCarrinho) : {};
-                fetch('/caminho-para-api-de-registro-de-venda/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Token-Unico': tokenUnico, // Envia o token único no cabeçalho
-                    },
-                    body: JSON.stringify({
-                        orderID: data.orderID,
-                        details: details,
-                        customerInfo: dadosDoFormulario,
-                        carrinho: carrinho
-                    })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                    throw new Error('Falha ao enviar os detalhes da compra para o servidor.');
-                })
-                .then(data => {
-                    // Sucesso - Redireciona ou atualiza a UI conforme necessário
-                    window.location.href = '/caminho-para-pagina-de-agradecimento/';
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
+                // Aqui você tem acesso aos detalhes da ordem capturada
+                //console.log('Detalhes da ordem capturada:', details);
+                
+                // Exemplo de como acessar os detalhes do comprador
+                const emailComprador = details.payer.email_address;
+                console.log('Email do comprador:', emailComprador);
+                console.log(cartItems)
+                // Acessar e processar cada item comprado
+                details.purchase_units.forEach((purchase_unit) => {
+                    purchase_unit.items.forEach((item) => {
+                        console.log('Item comprado:', item.name, 'Quantidade:', item.quantity);
+                        // Aqui você pode fazer mais processamentos, como mostrar os itens na tela, salvar em banco de dados, etc.
+                    });
                 });
             });
         }

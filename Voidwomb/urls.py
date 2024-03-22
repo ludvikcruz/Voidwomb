@@ -27,7 +27,46 @@ urlpatterns = [
     path('contact',views.contact,name = 'contact'),
     path('store',views.store,name = 'store'),
     path('payment/', include('payment.urls')),
-    path('Adm/',include('Adm.urls')),
+    #path('Adm/',include('Adm.urls')),
+    
+    
+    path('Adm/',views.adm,name='admin'),
+    
+    
+    
+    #PathsAdm/ dos produtos
+    path('Adm/produtos/adicionar/', views.adicionar_produto, name='adicionar_produto'),
+    path('Adm/produtos/editar/<int:id>/', views.editar_produto, name='editar_produto'),
+    path('Adm/produtos/eliminar/<int:id>/', views.eliminar_produto, name='eliminar_produto'),
+    path('Adm/produtos/', views.lista_produtos_tamanhos, name='lista_produtos'),
+    path('Adm/produtos/importExcel/', views.lista_produtos_tamanhos, name='upload_excel'),
+    path('Adm/produtos/ExportExel/', views.exportar_produtos_csv, name='exportar_produtos'),
+    path('Adm/caminho/para/eliminar/produtos/selecionados/', views.eliminar_selecionados, name='eliminar_produtos_selecionados'),
+    path("Adm/produtos/tamanhos/adicionar", views.adicionar_tamanho, name="adicionar_tamanho"),
+    path('Adm/produtos/tamanho/editar/<int:id>/', views.editar_tamanho, name='editar_tamanho'),
+    path('Adm/produtos/tamanho/excluir/<int:id>/', views.excluir_tamanho, name='excluir_tamanho'),
+    
+    
+    #PathsAdm/ dos users
+    path('Adm/users/login',views.login_view,name ='login'),
+    path('Adm/users/logout',views.logout_view,name ='logout'),
+ 
+    #path Adm/paises
+    path('Adm/paises/', views.listar_paises, name='listar_paises'),
+    path('Adm/paises/adicionar',views.paises_adicionar,name ='adicionar_paises'),
+    path('Adm/paises/editar/<int:id>/', views.editar_pais, name='editar_pais'),
+    path('Adm/paises/excluir/<int:id>/', views.excluir_pais, name='excluir_pais'),
+    path('Adm/paises/import-countries/', views.listar_paises, name='import_countries'),
+
+    #pathsAdm/ dos eventos
+    path('Adm/eventos/', views.lista_eventos, name='lista_eventos'),
+    path('Adm/eventos/add/', views.evento_add, name='evento_add'),
+    path('Adm/eventos/edit/<int:pk>/', views.evento_edit, name='evento_edit'),
+    path('Adm/eventos/delete/<int:pk>/', views.evento_delete, name='evento_delete'),
+    path('Adm/eventos/exportar-eventos-csv/', views.exportar_eventos_para_csv, name='exportar_eventos_csv'),
+
+    
+    
     path('cart/add/<int:produto_id>/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
     path('cart/ad/<int:produto_id>/', views.adicionar_dentro_carrinho, name='adicionar_dentro_carrinho'),
     path('cart/add/clothes/<int:produto_id>',views.adicionar_roupa_dentro_carrinho, name = 'adicionar_roupa_dentro'),

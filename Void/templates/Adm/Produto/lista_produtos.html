@@ -1,0 +1,130 @@
+{% extends "_base.html" %}
+{% block conteudo %}
+<form action="{% url 'eliminar_produtos_selecionados' %}" method="post">
+    {% csrf_token %}
+  <section class="bg-gray-50 dark:bg-gray-900 py-3 sm:py-5">
+    <div class="px-4 mx-auto max-w-screen-2xl lg:px-12">
+        <div class="relative overflow-hidden bg-white shadow-md dark:bg-gray-800 sm:rounded-lg">
+            <div class="flex flex-col px-4 py-3 space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 lg:space-x-4">
+                <div class="flex flex-col flex-shrink-0 space-y-3 md:flex-row md:items-center lg:justify-end md:space-y-0 md:space-x-3">
+                    <a href="{% url 'adicionar_produto' %}"><button type="button" class="flex items-center justify-center flex-shrink-0 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                        <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                        </svg>
+                        Add new product
+                    </button></a>
+                    <a href="{% url 'exportar_produtos' %}"><button type="button" class="flex items-center justify-center flex-shrink-0 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                        <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                        Export CSV
+                    </button></a>
+                    <button type="submit" class="flex items-center justify-center flex-shrink-0 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg focus:outline-none hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                        Eliminar Selecionados
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-4 py-3">checkbox</th>
+                            <th scope="col" class="px-4 py-3">Product</th>
+                            <th scope="col" class="px-4 py-3">Category</th>
+                            <th scope="col" class="px-4 py-3">Stock</th>
+                            <th scope="col" class="px-4 py-3">Sales</th>
+                            <th scope="col" class="px-4 py-3">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for produto in page_obj %}
+                        <tr class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <td class="px-4 py-2"><input type="checkbox" name="produto_id" value="{{ produto.id }}"></td>
+                            <th scope="row" class="flex items-center px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                {% if produto.imagem %}
+                                    <img class="w-auto h-8 mr-3" src="{{ produto.imagem.url }}" alt="product image" />
+                                {% endif %}
+                                {{produto.nome}}
+                            </th>
+                            <td class="px-4 py-2">
+                                <span class="bg-primary-100 text-primary-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-primary-900 dark:text-primary-300">{{protudo.categoria}}</span>
+                            </td>
+                            <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                <div class="flex items-center">
+                                    <div class="inline-block w-4 h-4 mr-2 bg-red-700 rounded-full"></div>
+                                    {{produto.stock}}
+                                </div>
+                            </td>
+                            <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24" fill="currentColor" class="w-5 h-5 mr-2 text-gray-400" aria-hidden="true">
+                                        <path d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" />
+                                    </svg>
+                                    {{produto.vendas}}
+                                </div>
+                            </td>
+                            <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap dark:text-white"><a href="{% url 'editar_produto' produto.id %}">Editar</a> - <a href="{% url 'eliminar_produto' produto.id %}">Eliminar</a></td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <nav class="flex flex-col items-start justify-between p-4 space-y-3 md:flex-row md:items-center md:space-y-0" aria-label="Table navigation">
+                <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                    Showing
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ page_obj.start_index }}</span>
+                    to
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ page_obj.end_index }}</span>
+                    of
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ page_obj.paginator.count }}</span>
+                </span>
+                <div>
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="...">Previous</a>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <a href="?page={{ num }}" class="...">{{ num }}</a>
+                        {% else %}
+                            <a href="?page={{ num }}" class="...">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="...">Next</a>
+                    {% endif %}
+                </div>
+            </nav>            
+        </div>
+    </div>
+  </section>
+</form>
+<form class="max-w-lg mx-auto" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white" for="user_avatar">Upload file</label>
+    {{form.as_p}}
+    <button type="submit" class="text-black bg-gray-800 hover:bg-blue-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 ">Upload</button>
+  </form>
+
+  <h1>Tamanhos</h1>
+  <a href="{% url 'adicionar_tamanho' %}">Adicionar</a>
+  <table>
+    <tr>
+        <th>Produto</th>
+        <th>Tamanho</th>
+        <th>Stock</th>
+    </tr>
+    {% for tamanho in tamanhos %}
+        <tr>
+            <td>{{ tamanho.produto_id }}</td>
+            <td>{{ tamanho.get_tamanho_display }}</td>
+            <td>{{ tamanho.stock_por_tamanho }}</td>
+            <td>
+                <a href="{% url 'editar_tamanho' tamanho.id %}">Editar</a>
+                <a href="{% url 'excluir_tamanho' tamanho.id %}" onclick="return confirm('Tem certeza que deseja excluir este tamanho?');">Excluir</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+  
+  {% endblock conteudo %}

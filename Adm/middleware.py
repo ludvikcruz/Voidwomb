@@ -18,3 +18,5 @@ class AdminRequiredMiddleware:
             if not (request.user.is_authenticated and request.user.is_staff):
                 return HttpResponseRedirect(reverse('login'))
         return None
+
+

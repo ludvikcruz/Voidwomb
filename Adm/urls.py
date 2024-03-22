@@ -1,4 +1,6 @@
 # payment/urls.py
+#git clone -b t https://github.com/ludvikcruz/Voidwomb.git
+
 from django.urls import path
 from . import views
 from django.conf import settings

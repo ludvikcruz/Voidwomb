@@ -44,7 +44,7 @@
                   </td>
                   <td class="px-6 py-4 font-semibold  dark:text-white text-white">
                       {{product.produto.nome}}
-                      {% if product.tamanho_nome %}
+                      {% if product.tamanho_nome != 'único' %}
                         Size: {{product.tamanho_nome}}
                       {% endif %} 
                   </td>

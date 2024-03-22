@@ -62,7 +62,7 @@ class ProdutoTamanho(models.Model):
     stock_por_tamanho = models.IntegerField()
 
     def __str__(self):
-        return f"{self.produto.nome} - {self.tamanho}"
+        return f"{self.tamanho}"
 
 class country(models.Model):
     id = models.AutoField(primary_key=True)

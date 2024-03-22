@@ -98,7 +98,7 @@ def adicionar_roupa(request, produto_id):
     tamanho_objeto = get_object_or_404(ProdutoTamanho, id=tamanho_id, produto=produto)
 
     # Define a chave do carrinho baseada no ID do produto e do tamanho
-    chave_carrinho = f"{produto_id}_{tamanho_id}"
+    chave_carrinho = f"{produto_id}"
 
     # Atualiza ou adiciona o item ao carrinho
     if chave_carrinho in cart:
@@ -118,31 +118,28 @@ def adicionar_roupa(request, produto_id):
    
 def adicionar_roupa_dentro_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
-    tamanhoobj = request.POST.get('size')
-    tamanho = get_object_or_404(ProdutoTamanho, tamanho = tamanhoobj) 
     produto = get_object_or_404(Produto, id=produto_id)
     
-    quantidade_a_adicionar = int(request.POST.get('quantidade', 1))
+    # Define a chave do carrinho baseada no ID do produto
+    chave_carrinho = f"{produto_id}"
 
-    # Define a chave do carrinho baseada na presença do tamanho
-    chave_carrinho = f"{produto_id}_{tamanho}" if tamanho else str(produto_id)
-
-    # Atualiza ou adiciona o item ao carrinho
+    # Verifica se o produto está presente no carrinho
     if chave_carrinho in cart:
-        cart[chave_carrinho]['quantidade'] += quantidade_a_adicionar
+        # Incrementa a quantidade do produto
+        cart[chave_carrinho]['quantidade'] += 1
     else:
-        cart[chave_carrinho] = {'quantidade': quantidade_a_adicionar, 'tamanho': tamanho if tamanho else 'único'}
+        messages.error(request, 'O produto não está presente no carrinho.')
+        return redirect('carrinho')
 
-    # Verifica estoque se necessário
-    if tamanho:
-        tamanho_objeto = get_object_or_404(ProdutoTamanho, produto=produto, tamanho=tamanho)
-        if cart[chave_carrinho]['quantidade'] >= tamanho_objeto.stock_por_tamanho:
-            messages.error(request, f'Não é possível adicionar a quantidade desejada ao carrinho. Estoque disponível para o tamanho {tamanho}: {tamanho_objeto.estoque}.')
-            return HttpResponseRedirect(reverse('carrinho'))
-
+    # Atualiza a sessão do carrinho
     request.session['carrinho'] = cart
-    messages.success(request, f'{quantidade_a_adicionar} unidades de {produto.nome} adicionadas ao carrinho.')
-    return HttpResponseRedirect(reverse('carrinho'))
+
+    # Mensagem de sucesso
+    messages.success(request, f'1 unidade de {produto.nome} adicionada ao carrinho.')
+
+    # Redireciona para a página da loja
+    return redirect('carrinho')
+
 
 
 def remover_do_carrinho(request, produto_id):
@@ -158,20 +155,85 @@ def remover_do_carrinho(request, produto_id):
     request.session['carrinho'] = cart
     return HttpResponseRedirect(reverse('carrinho'))
 
+def remover_roupa_do_carrinho(request, produto_id, tamanho_id=None):
+    cart = request.session.get('carrinho', {})
 
+    chave = f"{produto_id}_{tamanho_id}" if tamanho_id else str(produto_id)
+
+    if chave in cart:
+        del cart[chave]
+        request.session['carrinho'] = cart
+        messages.success(request, 'Produto removido do carrinho com sucesso.')
+    else:
+        messages.error(request, 'O produto selecionado não está no carrinho.')
+
+    return HttpResponseRedirect(reverse('carrinho'))
+
+
+
+
+
+# def carrinho(request):
+#     countrys = country.objects.all()
+#     cart = request.session.get('carrinho', {})
+#     itens_carrinho = []
+#     total = 0
+#     print(cart)
+#     for chave, info_produto in cart.items():
+#         produto_id, tamanho_id = chave.split('_') if '_' in chave else (chave, None)
+#         produto = get_object_or_404(Produto, id=produto_id)
+#         tamanho = get_object_or_404(ProdutoTamanho, id=tamanho_id) if tamanho_id else None
+#         quantidade = info_produto['quantidade']  
+#         if quantidade > produto.stock:
+#             messages.error(request, f'Stock insuficiente para {produto.nome}. Disponíveis: {produto.stock}.')
+#             # Adiciona ao carrinho mas marca como inativo e não adiciona ao total
+#             itens_carrinho.append({
+#                 'produto_id': produto.id,
+#                 'produto': produto,
+#                 'quantidade': quantidade,
+#                 'subtotal': produto.preco * min(quantidade, produto.stock),
+#                 'tamanho': tamanho,
+#                 'tamanho_nome': tamanho.tamanho if tamanho else 'único',
+#                 'ativo': False,  
+#             })
+#         else:
+#             subtotal = produto.preco * quantidade
+#             total += subtotal  
+#             itens_carrinho.append({
+#                 'produto_id': produto.id,
+#                 'produto': produto,
+#                 'quantidade': quantidade,
+#                 'subtotal': subtotal,
+#                 'tamanho': tamanho,
+#                 'tamanho_nome': tamanho.tamanho if tamanho else 'único',
+#                 'ativo': True,
+#             })
+
+#     return render(request, 'store/dados_encomenda.html', {
+#         'itens_carrinho': itens_carrinho,
+#         'total': total,
+#         'countrys': countrys,
+#     })
 def carrinho(request):
     countrys = country.objects.all()
     cart = request.session.get('carrinho', {})
     itens_carrinho = []
     total = 0
     print(cart)
-    for chave, info_produto in cart.items():
-        produto_id, tamanho_id = chave.split('_') if '_' in chave else (chave, None)
+    for produto_id, info_produto in cart.items():
         produto = get_object_or_404(Produto, id=produto_id)
-        tamanho = get_object_or_404(ProdutoTamanho, id=tamanho_id) if tamanho_id else None
+        tamanho_id = info_produto.get('tamanho')
+        tamanho = None
+        tamanho_nome = 'único'  # Definindo como 'único' por padrão
+
+        if tamanho_id != 'único':
+            tamanho = get_object_or_404(ProdutoTamanho, id=tamanho_id)
+            tamanho_nome = tamanho.tamanho
+
         quantidade = info_produto['quantidade']  
+
         if quantidade > produto.stock:
-            messages.error(request, f'Estoque insuficiente para {produto.nome}. Disponíveis: {produto.stock}.')
+            messages.error(request, f'Stock insuficiente para {produto.nome}. Disponíveis: {produto.stock}.')
             # Adiciona ao carrinho mas marca como inativo e não adiciona ao total
             itens_carrinho.append({
                 'produto_id': produto.id,
@@ -179,7 +241,7 @@ def carrinho(request):
                 'quantidade': quantidade,
                 'subtotal': produto.preco * min(quantidade, produto.stock),
                 'tamanho': tamanho,
-                'tamanho_nome': tamanho.tamanho if tamanho else 'único',
+                'tamanho_nome': tamanho_nome,
                 'ativo': False,  
             })
         else:
@@ -191,7 +253,7 @@ def carrinho(request):
                 'quantidade': quantidade,
                 'subtotal': subtotal,
                 'tamanho': tamanho,
-                'tamanho_nome': tamanho.tamanho if tamanho else 'único',
+                'tamanho_nome': tamanho_nome,
                 'ativo': True,
             })
 
@@ -200,6 +262,7 @@ def carrinho(request):
         'total': total,
         'countrys': countrys,
     })
+
 
     
     

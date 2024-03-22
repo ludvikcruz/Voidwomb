@@ -154,14 +154,14 @@ def adicionar_roupa_dentro_carrinho(request, produto_id):
         # Incrementa a quantidade do produto
         cart[chave_carrinho]['quantidade'] += 1
     else:
-        messages.error(request, 'O produto não está presente no carrinho.')
+        messages.error(request, 'The product is not on the cart')
         return redirect('carrinho')
 
     # Atualiza a sessão do carrinho
     request.session['carrinho'] = cart
 
     # Mensagem de sucesso
-    messages.success(request, f'1 unidade de {produto.nome} adicionada ao carrinho.')
+    messages.success(request, f'1 piece, was {produto.nome} added to the cart.')
 
     # Redireciona para a página da loja
     return redirect('carrinho')

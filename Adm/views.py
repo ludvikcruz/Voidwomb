@@ -175,12 +175,12 @@ def login_view(request):
             messages.error(request,'Email ou password incorretos.')
             return HttpResponseRedirect(reverse('login'))
         # Método GET, renderize o formulário de login.
-    return render(request, 'Adm/login.html')
+    return render(request, 'login.html')
     
 
 def adm(request):
     
-    return render(request,'Adm/adm.html')
+    return render(request,'adm.html')
 
 def logout_view(request):
     logout(request)
@@ -219,7 +219,7 @@ def paises_adicionar(request):
             return HttpResponseRedirect(reverse('listar_paises'))
     else:
         form = paisesForm()
-    return render(request, 'Adm/Paises/paisesForm.html', {'form': form})
+    return render(request, 'Paises/paisesForm.html', {'form': form})
 
 def listar_paises(request):
     paises = country.objects.all()
@@ -239,7 +239,7 @@ def listar_paises(request):
                 shipping=row[2],
             )
         return HttpResponseRedirect(reverse('listar_paises'))
-    return render(request, 'Adm/Paises/paisesLista.html', {'paises': paises})
+    return render(request, 'Paises/paisesLista.html', {'paises': paises})
 
 def editar_pais(request, id):
     pais = get_object_or_404(country, id=id)
@@ -252,7 +252,7 @@ def editar_pais(request, id):
             return HttpResponseRedirect(reverse('listar_paises'))
     else:
         form = paisesForm(instance=pais)
-    return render(request, 'Adm/Paises/paisesForm.html', {'form': form})
+    return render(request, 'Paises/paisesForm.html', {'form': form})
 
 # Exclui país
 def excluir_pais(request, id):
@@ -262,7 +262,7 @@ def excluir_pais(request, id):
         # Adiciona uma mensagem de sucesso
         messages.success(request, 'País eliminado com sucesso!')
         return HttpResponseRedirect(reverse('listar_paises'))
-    return render(request, 'Adm/Paises/excluirPais.html', {'pais': pais})
+    return render(request, 'Paises/excluirPais.html', {'pais': pais})
 
 
 
@@ -281,7 +281,7 @@ def evento_add(request):
             return HttpResponseRedirect(reverse('lista_eventos'))
     else:
         form = EventoForm()
-    return render(request, 'Adm/Eventos/form.html', {'form': form})
+    return render(request, 'Eventos/form.html', {'form': form})
 
 def evento_edit(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
@@ -294,7 +294,7 @@ def evento_edit(request, pk):
             return HttpResponseRedirect(reverse('lista_eventos'))
     else:
         form = EventoForm(instance=evento)
-    return render(request, 'Adm/Eventos/form.html', {'form': form})
+    return render(request, 'Eventos/form.html', {'form': form})
 
 def evento_delete(request, pk):
     evento = get_object_or_404(Evento, pk=pk)
@@ -303,7 +303,7 @@ def evento_delete(request, pk):
         # Adiciona uma mensagem de sucesso
         messages.success(request, 'Ritual eliminado com sucesso!')
         return HttpResponseRedirect(reverse('lista_eventos'))
-    return render(request, 'Adm/Eventos/delete.html', {'evento': evento})
+    return render(request, 'Eventos/delete.html', {'evento': evento})
 
 def exportar_eventos_para_csv(request):
     # Cria a resposta com o tipo de conteúdo correto

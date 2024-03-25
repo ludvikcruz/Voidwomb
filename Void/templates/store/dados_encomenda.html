@@ -202,26 +202,23 @@
         // Re-renderiza o botão do PayPal com o novo total
         renderPayPalButton(newTotal.toFixed(2));
       });
+      
       function getCarrinhoCookie() {
-        // Nome da cookie que você quer buscar
-        const name = 'carrinho';
-        // Decodifica o valor da cookie e divide em um array
+        const name = 'carrinho=';
         const decodedCookie = decodeURIComponent(document.cookie);
         const ca = decodedCookie.split(';');
-        for(let i = 0; i < ca.length; i++) {
+        for (let i = 0; i < ca.length; i++) {
             let c = ca[i];
             while (c.charAt(0) === ' ') {
                 c = c.substring(1);
             }
-            // Verifica se o nome da cookie está no início da string
             if (c.indexOf(name) === 0) {
-                // Extrai o valor da cookie e converte de JSON para um objeto JavaScript
-                return JSON.parse(c.substring(name.length, c.length));
+                return c.substring(name.length, c.length);
             }
         }
-        // Retorna um objeto vazio se a cookie não for encontrada
-        return {};
+        return "{}"; // Retorna uma string JSON vazia se a cookie não existir
     }
+    
     
     // Usando a função para obter o carrinho
     const carrinho = getCarrinhoCookie();

@@ -63,6 +63,20 @@ class ProdutoTamanho(models.Model):
 
     def __str__(self):
         return f"{self.tamanho}"
+    
+    def save(self, *args, **kwargs):
+        if self.pk:  # Verifica se o objeto já existe
+            old_obj = ProdutoTamanho.objects.get(pk=self.pk)
+            if old_obj.stock_por_tamanho != self.stock_por_tamanho:
+                # Calcula a diferença no estoque
+                stock_difference = self.stock_por_tamanho - old_obj.stock_por_tamanho
+                
+                # Atualiza o estoque do Produto relacionado
+                produto = self.produto
+                produto.stock += stock_difference
+                produto.save()
+        
+        super().save(*args, **kwargs)
 
 class country(models.Model):
     id = models.AutoField(primary_key=True)

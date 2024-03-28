@@ -79,7 +79,11 @@ urlpatterns = [
     path('cart/deleteA/<int:produto_id>',views.remover_dentro_carrinho,name='removerTdentro'),
     
     #path de pagamento
-    path('registrar-pagamento/', views.registrar_pagamento, name='registrar_pagamento'),
+    path('cart/payment/register/', views.create_payment, name='create_payment'),
+    path('cart/payment/execute/', views.execute_payment, name='execute_payment'),
+    path('cart/payment/cancelled/', views.payment_cancelled, name='payment_cancelled'),
+    path('cart/payment/success/<str:payment_id>', views.payment_success, name='payment_suc'),
+    
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

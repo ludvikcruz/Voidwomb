@@ -13,18 +13,17 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 import environ
+import paypalrestsdk
 from dotenv import load_dotenv
 # Initialise environment variables
-env = environ.Env()
-environ.Env.read_env()
 load_dotenv()
 
 
-#paypal settings
-PAYPAL_RECEIVER_EMAIL = 'voidwomb.band@gmail.com'
-PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID")
-PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_CLIENT_SECRET")
-PAYPAL_MODE = 'live'
+paypalrestsdk.configure({
+    "mode": "sandbox",  # "sandbox" para desenvolvimento e testes, "live" para produção
+    "client_id":os.getenv('PAYPAL_CLIENT_ID'),
+    "client_secret":os.getenv('PAYPAL_CLIENT_SECRET'),
+})
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -47,7 +46,10 @@ SECRET_KEY = 'django-insecure-3vndy%grhk*7v(et3lpwn1+0_-)776klg0@6vx)#2krt==^@z9
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['8865-2-83-105-229.ngrok-free.app', 'localhost', '127.0.0.1']
+
+CSRF_TRUSTED_ORIGINS = ['https://*.ngrok-free.app']
+
 
 
 # Application definition
@@ -63,6 +65,7 @@ INSTALLED_APPS = [
     'Void',
     'payment',
     'Adm',
+    'paypal.standard.ipn',
 ]
 
 MIDDLEWARE = [
@@ -74,8 +77,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'Adm.middleware.AdminRequiredMiddleware',
-    'Void.middleware.Custom404Middleware',
-    'Void.middleware.Custom500Middleware',
+    #'Void.middleware.Custom404Middleware',
+    #'Void.middleware.Custom500Middleware',
 ]
 
 ROOT_URLCONF = 'Voidwomb.urls'
@@ -182,5 +185,3 @@ STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
- 

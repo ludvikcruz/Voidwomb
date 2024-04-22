@@ -95,33 +95,43 @@ def adicionar_ao_carrinho(request, produto_id):
 
 def adicionar_dentro_carrinho(request, produto_id):
     produto = get_object_or_404(Produto, id=produto_id)
-    cart = request.session.get('carrinho', {})
-
-    product_id_str = str(produto_id)
-    if product_id_str in cart:
-        # Verifica se o valor correspondente a product_id_str é um dicionário
-        if isinstance(cart[product_id_str], dict):
-            cart[product_id_str]['quantidade'] += 1
+    
+    if produto.estoque > 0:
+        cart = request.session.get('carrinho', {})
+        product_id_str = str(produto_id)
+        
+        if product_id_str in cart:
+            if isinstance(cart[product_id_str], dict):
+                cart[product_id_str]['quantidade'] += 1
+            else:
+                cart[product_id_str] = {
+                    'quantidade': cart[product_id_str] + 1,
+                    'nome': produto.nome,
+                    'preco': str(produto.preco),
+                    'sku': produto.sku,
+                    'categoria': produto.categoria.nome,  # Supondo que categoria é um objeto relacionado
+                }
         else:
-            # Se for um inteiro, substitui por um dicionário
-            cart[product_id_str] = {'quantidade': cart[product_id_str] + 1, 'tamanho': 'unico',
-                                    'size': 'unico',
-                                    'nome': produto.nome,
-                                    'preco': str(produto.preco),
-                                    'sku': produto.sku,
-                                    'categoria': produto.categoria
-                                    }
+            cart[product_id_str] = {
+                'quantidade': 1,
+                'nome': produto.nome,
+                'preco': str(produto.preco),
+                'sku': produto.sku,
+                'categoria': produto.categoria.nome,
+            }
+        
+        # Atualiza a sessão
+        request.session['carrinho'] = cart
+        request.session.set_expiry(300)  # Expire a sessão em 300 segundos (5 minutos)
+        
+        # Reduz o estoque
+        produto.estoque -= 1
+        produto.save()
+        
+        return HttpResponseRedirect(reverse('carrinho'))
     else:
-        cart[product_id_str] = {'quantidade': 1, 'tamanho': 'unico',
-                                    'size': 'unico',
-                                    'nome': produto.nome,
-                                    'preco': str(produto.preco),
-                                    'sku': produto.sku,
-                                    'categoria': produto.categoria
-                                    }
-
-    request.session['carrinho'] = cart
-    return redirect('carrinho')
+        messages.error(request,'Produto insuficiente')
+        return HttpResponseRedirect(reverse('carrinho'))
 
 
 

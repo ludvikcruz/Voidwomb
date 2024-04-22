@@ -16,6 +16,8 @@ from paypalrestsdk import Payment
 import re
 from django.http import JsonResponse
 
+from django.db.models import F
+
 
 
 def index(request):
@@ -52,12 +54,14 @@ def rituals(request):
     return render(request, 'rituals.html', {'eventos': eventos})
 
 def store(request):
-    produtos_list = Produto.objects.filter(stock__gt=0)
+    produtos_list = Produto.objects.filter(stock__gt=0).order_by('-data_criacao')
     paginator = Paginator(produtos_list, 4)
     page_number = request.GET.get('page')
     produtos = paginator.get_page(page_number)
     
     return render(request,'store.html',{'produtos':produtos})
+
+
 
 def about(request):
     return render(request,'about.html')
@@ -65,114 +69,130 @@ def about(request):
 def adicionar_ao_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
     produto = get_object_or_404(Produto, id=produto_id)
-    product_id_str = str(produto_id)
-    if product_id_str in cart:
-        # Verifica se o valor correspondente a product_id_str é um dicionário
-        if isinstance(cart[product_id_str], dict):
-            cart[product_id_str]['quantidade'] += 1
-        else:
-            # Se for um inteiro, substitui por um dicionário
-            cart[product_id_str] = {
-                'quantidade': cart[product_id_str] + 1, 'tamanho': 'unico',
-                                    'nome': produto.nome,
-                                    'size': 'unico',
-                                    'preco': str(produto.preco),
-                                    'sku': produto.sku,
-                                    'categoria': produto.categoria}
-    else:
-        cart[product_id_str] = {'quantidade': 1, 'tamanho': 'unico',
-                                    'nome': produto.nome,
-                                    'size': 'unico',
-                                    'preco': str(produto.preco),
-                                    'sku': produto.sku,
-                                    'categoria': produto.categoria
-                                    }
-
-    request.session['carrinho'] = cart
-    return redirect('store')
-
-
-
-def adicionar_dentro_carrinho(request, produto_id):
-    produto = get_object_or_404(Produto, id=produto_id)
     
-    if produto.estoque > 0:
-        cart = request.session.get('carrinho', {})
-        product_id_str = str(produto_id)
+    # Verificar se há estoque suficiente
+    if produto.stock >= 1:
+        produto.stock = F('stock') - 1
+        produto.save()
         
+        product_id_str = str(produto_id)
         if product_id_str in cart:
             if isinstance(cart[product_id_str], dict):
                 cart[product_id_str]['quantidade'] += 1
             else:
                 cart[product_id_str] = {
-                    'quantidade': cart[product_id_str] + 1,
+                    'quantidade': cart[product_id_str] + 1, 
+                    'tamanho': 'unico',
                     'nome': produto.nome,
+                    'size': 'unico',
                     'preco': str(produto.preco),
                     'sku': produto.sku,
-                    'categoria': produto.categoria.nome,  # Supondo que categoria é um objeto relacionado
+                    'categoria': produto.categoria
                 }
         else:
             cart[product_id_str] = {
-                'quantidade': 1,
+                'quantidade': 1, 
+                'tamanho': 'unico',
                 'nome': produto.nome,
+                'size': 'unico',
                 'preco': str(produto.preco),
                 'sku': produto.sku,
-                'categoria': produto.categoria.nome,
+                'categoria': produto.categoria
             }
+    else:
+        # Exibir mensagem de erro informando que o produto está esgotado
+        messages.error(request, f"O produto {produto.nome} está esgotado.")
+        return HttpResponseRedirect(reverse('store'))
         
-        # Atualiza a sessão
-        request.session['carrinho'] = cart
-        request.session.set_expiry(300)  # Expire a sessão em 300 segundos (5 minutos)
-        
-        # Reduz o estoque
-        produto.estoque -= 1
+    request.session['carrinho'] = cart
+    print(cart)
+    return HttpResponseRedirect(reverse('store'))
+
+
+
+
+def adicionar_dentro_carrinho(request, produto_id):
+    cart = request.session.get('carrinho', {})
+    produto = get_object_or_404(Produto, id=produto_id)
+    
+    # Verificar se há estoque suficiente
+    if produto.stock >= 1:
+        produto.stock = F('stock_disponivel') - 1
         produto.save()
         
-        return HttpResponseRedirect(reverse('carrinho'))
+        product_id_str = str(produto_id)
+        if product_id_str in cart:
+            if isinstance(cart[product_id_str], dict):
+                cart[product_id_str]['quantidade'] += 1
+            else:
+                cart[product_id_str] = {
+                    'quantidade': cart[product_id_str] + 1, 
+                    'tamanho': 'unico',
+                    'nome': produto.nome,
+                    'size': 'unico',
+                    'preco': str(produto.preco),
+                    'sku': produto.sku,
+                    'categoria': produto.categoria
+                }
+        else:
+            cart[product_id_str] = {
+                'quantidade': 1, 
+                'tamanho': 'unico',
+                'nome': produto.nome,
+                'size': 'unico',
+                'preco': str(produto.preco),
+                'sku': produto.sku,
+                'categoria': produto.categoria
+            }
     else:
-        messages.error(request,'Produto insuficiente')
+        # Exibir mensagem de erro informando que o produto está esgotado
+        messages.error(request, f"O produto {produto.nome} está esgotado.")
         return HttpResponseRedirect(reverse('carrinho'))
+        
+    request.session['carrinho'] = cart
+    return HttpResponseRedirect(reverse('carrinho'))
 
 
 
 def adicionar_roupa(request, produto_id):
+    # Obtém o carrinho da sessão
     cart = request.session.get('carrinho', {})
+    # Obtém o produto a partir do ID fornecido
     produto = get_object_or_404(Produto, id=produto_id)
+    # Obtém a quantidade a ser adicionada ao carrinho (padrão: 1)
     quantidade_a_adicionar = int(request.POST.get('quantidade', 1))
-
     # Verifica se foi enviado um tamanho no formulário
     tamanho_id = request.POST.get('size')
     if not tamanho_id:
         messages.error(request, 'É necessário selecionar um tamanho.')
         return redirect('carrinho')
-
-    # Verifica se o tamanho é válido para o produto
+    # Obtém o objeto de tamanho correspondente ao ID fornecido
     tamanho_objeto = get_object_or_404(ProdutoTamanho, id=tamanho_id, produto=produto)
-
     # Define a chave do carrinho baseada no ID do produto e do tamanho
-    chave_carrinho = f"{produto_id}"
-
-    # Atualiza ou adiciona o item ao carrinho
+    chave_carrinho = f"{produto_id}_{tamanho_id}"
+    # Verifica se o item já está no carrinho e atualiza a quantidade
     if chave_carrinho in cart:
         cart[chave_carrinho]['quantidade'] += quantidade_a_adicionar
     else:
+        # Adiciona um novo item ao carrinho
         cart[chave_carrinho] = {
             'nome': produto.nome,
             'tamanho': tamanho_id,
-            'size':tamanho_objeto.tamanho,
+            'size': tamanho_objeto.tamanho,
             'quantidade': quantidade_a_adicionar,
             'sku': produto.sku,
             'preco': str(produto.preco),
             'categoria': produto.categoria
-            }
-
-    # Verifica estoque
+        }
+    # Verifica se há estoque disponível para o tamanho selecionado
     if cart[chave_carrinho]['quantidade'] > tamanho_objeto.stock_por_tamanho:
-        messages.error(request, f'It is not possible to add the desired quantity to the cart. Available stock for the size {tamanho_objeto.tamanho}: {tamanho_objeto.stock_por_tamanho}.')
+        messages.error(request, f'Não é possível adicionar a quantidade desejada ao carrinho. Estoque disponível para o tamanho {tamanho_objeto.tamanho}: {tamanho_objeto.stock_por_tamanho}.')
         return redirect('carrinho')
-
+    # Atualiza o carrinho na sessão
     request.session['carrinho'] = cart
-    messages.success(request, f'{quantidade_a_adicionar} pieces of {produto.nome} ({tamanho_objeto.tamanho}) added to the cart.')
+    # Exibe uma mensagem de sucesso informando quantas peças foram adicionadas ao carrinho
+    messages.success(request, f'{quantidade_a_adicionar} peça(s) de {produto.nome} ({tamanho_objeto.tamanho}) adicionada(s) ao carrinho.')
+    # Redireciona de volta à página da loja
     return redirect('store')
 
 
@@ -200,18 +220,24 @@ def adicionar_roupa_dentro_carrinho(request, produto_id):
     # Redireciona para a página da loja
     return redirect('carrinho')
 
+
+
 def remover_do_carrinho(request, produto_id):
     cart = request.session.get('carrinho', {})
+     # Verificar se há estoque suficiente
+    if produto.stock >= 1:
+        produto.stock = F('stock') + 1
+        produto.save()
+        
+        product_id_str = str(produto_id)
+        if product_id_str in cart:
+            if cart[product_id_str]['quantidade'] > 1:
+                cart[product_id_str]['quantidade'] -= 1  # Decrementa a quantidade do item
+            else:
+                del cart[product_id_str]  # Remove o item do carrinho se a quantidade for 1 ou menos
 
-    product_id_str = str(produto_id)
-    if product_id_str in cart:
-        if cart[product_id_str]['quantidade'] > 1:
-            cart[product_id_str]['quantidade'] -= 1  # Decrementa a quantidade do item
-        else:
-            del cart[product_id_str]  # Remove o item do carrinho se a quantidade for 1 ou menos
-
-    request.session['carrinho'] = cart
-    return HttpResponseRedirect(reverse('carrinho'))
+        request.session['carrinho'] = cart
+        return HttpResponseRedirect(reverse('carrinho'))
 
 def remover_roupa_do_carrinho(request, produto_id, tamanho_id=None):
     cart = request.session.get('carrinho', {})

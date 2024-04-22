@@ -18,6 +18,7 @@ class Produto(models.Model):
     cor = models.CharField(max_length=50, blank=True, null=True)
     imagem = models.ImageField(upload_to='produtos_imagens/', blank=True, null=True, default='produtos_imagens/Tshirt-AOCD.jpg')
     vendas = models.IntegerField(default=0)
+    data_criacao = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return self.nome

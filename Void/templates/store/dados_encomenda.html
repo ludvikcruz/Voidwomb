@@ -1,6 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
 {% load static %}
+
+<style>
+  .paypal-button {
+    background-color: #ffc439; /* Cor de fundo amarela do PayPal */
+    color: #111; /* Texto escuro para contraste */
+    border: none; /* Sem borda */
+    border-radius: 4px; /* Bordas arredondadas */
+    padding: 10px 20px; /* Espaçamento interno */
+    font-size: 16px; /* Tamanho da fonte */
+    font-weight: bold; /* Fonte em negrito */
+    text-transform: uppercase; /* Texto em caixa alta */
+    cursor: pointer; /* Cursor em formato de ponteiro */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra discreta */
+    transition: background-color 0.3s ease; /* Transição suave de cor de fundo */
+  }
+  .paypal-button img {
+    height: 24px; /* Height of the PayPal logo */
+  }
+  .paypal-button:hover {
+    background-color: #e0a619; /* Cor mais escura no hover para efeito interativo */
+  }
+  .paypal-button:active {
+    background-color: #c6931a; /* Cor ainda mais escura quando o botão é clicado */
+  }
+</style>
+
+
 <div class="bg-gray-100" style="background-color: rgba(0, 0, 0, 0.5);">
   <div class="container mx-auto mt-10">
     <div class="flex shadow-md my-10 border border-white border-2">
@@ -167,7 +194,10 @@
           </div>
           
             {% csrf_token %}
-            <button type="submit">Pagar com PayPal</button>
+            <button type="submit" style="background-color: #FFC439;" class="flex items-center text-black justify-center gap-2 hover:bg-yellow-600 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+              <img src="../../static/src/img/paypal.png" alt="PayPal Logo" class="w-6 h-6">
+              Pagar com PayPal
+          </button>
         </form>
         </div>
       </div>

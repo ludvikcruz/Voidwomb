@@ -931,6 +931,32 @@ def payment_success(request, payment_id):
 
 
 def payment_cancelled(request):
-    # Página ou ação após o cancelamento do pagamento
-    # Por exemplo, redirecionar o usuário para a página de carrinho ou para uma página de cancelamento personalizada
-    return HttpResponse("Pagamento cancelado pelo usuário.")
+    try:
+        # Obtém o carrinho da sessão
+        cart = request.session.get('carrinho', {})
+
+        # Restaura o estoque dos produtos que estavam no carrinho
+        for produto_id, info_produto in cart.items():
+            produto = get_object_or_404(Produto, id=produto_id)
+
+            # Verifica se o produto pertence à categoria "roupa"
+            if produto.categoria == 'roupa':
+                id_tamanho = info_produto['tamanho']
+                tamanho_produto = get_object_or_404(ProdutoTamanho, produto=produto, id=id_tamanho)
+                quantidade_comprada = info_produto['quantidade']
+                tamanho_produto.stock_por_tamanho += quantidade_comprada
+                tamanho_produto.save()
+            else:
+                quantidade_comprada = info_produto['quantidade']
+                produto.stock += quantidade_comprada
+                produto.save()
+
+        # Limpa o carrinho após o cancelamento do pagamento
+        del request.session['carrinho']
+
+        # Retorna uma mensagem indicando que o pagamento foi cancelado pelo usuário
+        return HttpResponse("Pagamento cancelado pelo usuário.")
+    except Exception as e:
+        logger.error("Erro ao lidar com o cancelamento do pagamento: %s" % str(e))
+        messages.error(request, 'Erro ao lidar com o cancelamento do pagamento.')
+        return HttpResponse("Erro ao lidar com o cancelamento do pagamento.", status=500)

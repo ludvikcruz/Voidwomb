@@ -1,0 +1,19 @@
+{% extends "_base.html" %}
+{% block conteudo %}
+<h1>Lista de Pagamentos</h1>
+<h1>Detalhes do Pagamento</h1>
+    <p>ID do Pedido: {{ pagamento.order_id }}</p>
+    <p>Email: {{ pagamento.email }}</p>
+    <p>Endereço: {{ pagamento.endereco }}</p>
+    <p>Código Postal: {{ pagamento.codigo_postal }}</p>
+    <p>Cidade: {{ pagamento.cidade }}</p>
+    <p>Total: {{ pagamento.total }}</p>
+    <p>Data do Pagamento: {{ pagamento.data_pagamento }}</p>
+
+    <h2>Itens Comprados</h2>
+    <ul>
+        {% for item in itens_do_carrinho %}
+        <li>{{ item.nome }} - {{ item.preco }} - Quantidade: {{ item.quantidade }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

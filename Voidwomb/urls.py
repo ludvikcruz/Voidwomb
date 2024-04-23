@@ -64,7 +64,8 @@ urlpatterns = [
     path('Adm/eventos/edit/<int:pk>/', views.evento_edit, name='evento_edit'),
     path('Adm/eventos/delete/<int:pk>/', views.evento_delete, name='evento_delete'),
     path('Adm/eventos/exportar-eventos-csv/', views.exportar_eventos_para_csv, name='exportar_eventos_csv'),
-
+    path('Adm/pagamentos/pagamentos/', views.lista_pagamentos, name='lista_pagamentos'),
+    path('Adm/pagamentos/<int:pagamento_id>/', views.detalhes_pagamento, name='detalhes_pagamento'),
     
     #path carrinho de compras
     path('cart/add/<int:produto_id>/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),

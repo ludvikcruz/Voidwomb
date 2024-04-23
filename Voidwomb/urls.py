@@ -69,17 +69,21 @@ urlpatterns = [
     #path carrinho de compras
     path('cart/add/<int:produto_id>/', views.adicionar_ao_carrinho, name='adicionar_ao_carrinho'),
     path('cart/ad/<int:produto_id>/', views.adicionar_dentro_carrinho, name='adicionar_dentro_carrinho'),
-    path('cart/add/clothes/<int:produto_id>',views.adicionar_roupa_dentro_carrinho, name = 'adicionar_roupa_dentro'),
+    path('cart/add/clothes/<int:produto_id>',views.adicionar_roupa_dentro_carrinho, name = 'adicionar_roupa_dentro_carrinho'),
     path('cart/add/clothe/<int:produto_id>',views.adicionar_roupa, name = 'adicionar_roupa'),
     path('cart/delete/<int:produto_id>/', views.remover_do_carrinho, name='remover_do_carrinho'),
-    path('cart/delete/clothes/<int:produto_id>/', views.remover_roupa_do_carrinho, name='remover_roupa_carrinho'),
+    path('cart/delete/clothes/<int:produto_id>/', views.remover_roupa_do_carrinho, name='remover_roupa_do_carrinho'),
     path('cart/',views.carrinho,name='carrinho'),
     path('store/product/<int:produto_id>',views.produto,name='produto'),
     path('cart/details',views.pessoa_encomenda,name='pessoa_encomenda'),
     path('cart/deleteA/<int:produto_id>',views.remover_dentro_carrinho,name='removerTdentro'),
     
     #path de pagamento
-    path('registrar-pagamento/', views.registrar_pagamento, name='registrar_pagamento'),
+    path('cart/payment/register/', views.create_payment, name='create_payment'),
+    path('cart/payment/execute/', views.execute_payment, name='execute_payment'),
+    path('cart/payment/cancelled/', views.payment_cancelled, name='payment_cancelled'),
+    path('cart/payment/success/<str:payment_id>', views.payment_success, name='payment_suc'),
+    
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

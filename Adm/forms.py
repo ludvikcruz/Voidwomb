@@ -39,7 +39,7 @@ class EventoForm(forms.ModelForm):
 class paisesForm(forms.ModelForm):
     class Meta:
         model = country
-        fields = ['name','acronimo']
+        fields = ['name','acronimo','shipping']
         
 
 class UploadExcelForm(forms.Form):

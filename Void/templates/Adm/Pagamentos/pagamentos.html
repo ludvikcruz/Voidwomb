@@ -1,0 +1,12 @@
+{% extends "_base.html" %}
+{% block conteudo %}
+<h1>Lista de Pagamentos</h1>
+<ul>
+    {% for pagamento in pagamentos %}
+    <li>
+        {{ pagamento.order_id }} - {{ pagamento.total }} - {{ pagamento.data_pagamento }}
+        <a href="{% url 'detalhes_pagamento' pagamento.id %}">Detalhes</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

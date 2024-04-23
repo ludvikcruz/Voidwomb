@@ -744,8 +744,15 @@ def exportar_eventos_para_csv(request):
 
     return response
 
+def lista_pagamentos(request):
+    pagamentos = Pagamento.objects.all()
+    return render(request, 'Adm/Pagamentos/pagamentos.html', {'pagamentos': pagamentos})
 
-    
+def detalhes_pagamento(request, pagamento_id):
+    pagamento = get_object_or_404(Pagamento, pk=pagamento_id)
+    itens_do_carrinho = ItemDoCarrinho.objects.filter(pagamento=pagamento)
+    return render(request, 'Adm/Pagamentos/detalhes_pagamento.html', {'pagamento': pagamento, 'itens_do_carrinho': itens_do_carrinho})
+
 import logging
 
 # Configurar o logger

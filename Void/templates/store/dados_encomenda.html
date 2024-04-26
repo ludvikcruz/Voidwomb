@@ -122,15 +122,10 @@
                           {% endif %}
                       </div>
                   </td>
-                  {% if not product.ativo %}
-                  <td class="px-6 py-4 font-semibold dark:text-white text-white">
-                      <p style="color: red;">Product out of stock!</p>
-                  </td>
                   {% elif product.ativo %}
                   <td class="px-6 py-4 font-semibold dark:text-white text-white">
                     {{product.produto.preco}}€
                 </td>
-                  {% endif %}
                   <td class="px-6 py-4 text-white">
                       <a href="{%url 'removerTdentro' product.produto_id %}" class="text-red font-medium text-red-600 dark:text-red-500 hover:underline">Remove</a>
                   </td>

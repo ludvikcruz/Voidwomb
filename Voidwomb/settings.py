@@ -77,13 +77,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'Adm.middleware.AdminRequiredMiddleware',
-<<<<<<< HEAD
     #'Void.middleware.Custom404Middleware',
     #'Void.middleware.Custom500Middleware',
-=======
-#    'Void.middleware.Custom404Middleware',
- #   'Void.middleware.Custom500Middleware',
->>>>>>> c06c20a (abash: line 3: \: command not found)
 ]
 
 ROOT_URLCONF = 'Voidwomb.urls'

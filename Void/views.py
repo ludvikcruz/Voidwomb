@@ -897,18 +897,18 @@ def payment_success(request, payment_id):
                     produto = get_object_or_404(Produto, id=produto_id)
 
 
-                    # Verifica se o produto pertence à categoria "roupa"
-                    if produto.categoria == 'roupa':
-                        id_tamanho = info_produto['tamanho']
-                        print(id_tamanho)
-                        tamanho_produto = get_object_or_404(ProdutoTamanho, produto=produto, id=id_tamanho)
-                        quantidade_comprada = info_produto['quantidade']
-                        tamanho_produto.stock_por_tamanho -= quantidade_comprada
-                        tamanho_produto.save()
-                    else:
-                        quantidade_comprada = info_produto['quantidade']
-                        produto.stock -= quantidade_comprada
-                        produto.save()
+                    # # Verifica se o produto pertence à categoria "roupa"
+                    # if produto.categoria == 'roupa':
+                    #     id_tamanho = info_produto['tamanho']
+                    #     print(id_tamanho)
+                    #     tamanho_produto = get_object_or_404(ProdutoTamanho, produto=produto, id=id_tamanho)
+                    quantidade_comprada = info_produto['quantidade']
+                    #     tamanho_produto.stock_por_tamanho -= quantidade_comprada
+                    #     tamanho_produto.save()
+                    # else:
+                    #     quantidade_comprada = info_produto['quantidade']
+                    #     produto.stock -= quantidade_comprada
+                    #     produto.save()
 
                     ItemDoCarrinho.objects.create(
                         pagamento=pagamento,

@@ -683,7 +683,7 @@ def excluir_pais(request, id):
 
 def lista_eventos(request):
     eventos = Evento.objects.all()
-    return render(request, 'Adm/eventos/lista_eventos.html', {'eventos': eventos})
+    return render(request, 'Adm/Eventos/lista_eventos.html', {'eventos': eventos})
 
 def evento_add(request):
     if request.method == "POST":

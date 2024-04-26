@@ -351,7 +351,7 @@ def carrinho(request):
                 'subtotal': produto.preco * min(quantidade, produto.stock),
                 'tamanho': tamanho,
                 'tamanho_nome': tamanho_nome,
-                'ativo': False,  
+                'ativo': True,  
             })
         else:
             subtotal = produto.preco * quantidade

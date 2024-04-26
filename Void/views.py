@@ -342,7 +342,7 @@ def carrinho(request):
         quantidade = info_produto['quantidade']  
 
         if quantidade > produto.stock:
-            messages.error(request, f'Not enough stock of {produto.nome}. Available: {produto.stock}.')
+            #messages.error(request, f'Not enough stock of {produto.nome}. Available: {produto.stock}.')
             # Adiciona ao carrinho mas marca como inativo e não adiciona ao total
             itens_carrinho.append({
                 'produto_id': produto.id,

@@ -771,7 +771,7 @@ def create_payment(request):
             quantidade = info_produto['quantidade']
             #if produto.stock < quantidade:
                 #messages.error(request, f"O produto {produto.nome} está fora de estoque.")
-            #    return HttpResponseRedirect(reverse('carrinho'))  # Redirecione de volta para a página do carrinho
+             #   return HttpResponseRedirect(reverse('carrinho'))  # Redirecione de volta para a página do carrinho
 
 
         acronimo_pag = request.POST.get('pais')
@@ -847,7 +847,6 @@ def create_payment(request):
         logger.error("Erro ao criar o pagamento: %s" % str(e))
         return HttpResponse("Erro ao criar o pagamento.", status=500)
     
-    
 
 def execute_payment(request):
     try:
@@ -856,20 +855,19 @@ def execute_payment(request):
 
         payment = Payment.find(payment_id)
 
-        if payment or (payment.execute({"payer_id": payer_id}) or payment.execute({'paymentID': payment_id})):
-            messages.success(request,'Payment executed with success!')
-            
-            return HttpResponseRedirect(reverse('payment_suc',args=[payment_id]))  # Retorna uma resposta HTTP de sucesso
+        # Verifica se o pagamento foi encontrado e se a execução foi bem-sucedida
+        if payment and payment.execute({"payer_id": payer_id}):
+            messages.success(request, 'Payment executed with success!')
+            return HttpResponseRedirect(reverse('payment_suc', args=[payment_id]))  # Retorna uma resposta HTTP de sucesso
         else:
             # Falha ao executar o pagamento
-            messages.error(request,'Failed to execute payment.')
+            messages.error(request, 'Failed to execute payment.')
             return HttpResponse("Falha ao executar o pagamento.", status=400)
     except Exception as e:
         logger.error("Erro ao executar o pagamento: %s" % str(e))
-        messages.error(request,'Failed to execute payment.')
+        messages.error(request, 'Failed to execute payment.')
         return HttpResponse("Erro ao executar o pagamento.", status=500)
-    
-    
+
 
 def payment_success(request, payment_id):
     try:

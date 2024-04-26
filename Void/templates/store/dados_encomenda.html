@@ -141,7 +141,7 @@
         
         <h1 class="font-semibold text-2xl border-b pb-8 mt-4 text-white">Checkout</h1>
         <form action="{% url 'create_payment' %}" onsubmit="return validarFormulario()" method="POST">
-        <!-- Customer Information -->
+        {% comment %} <!-- Customer Information -->
         <div>
           <label for="customer-name" class="text-white font-medium inline-block mb-3 text-sm uppercase">Name</label>
           <input  type="text" id="customer-name" placeholder="Your Name" class="p-2 text-sm w-full">
@@ -157,8 +157,10 @@
           
           <label for="city" class="text-white font-medium inline-block mb-3 text-sm uppercase mt-4">City</label>
           <input  type="text" id="city" placeholder="Your City" class="p-2 text-sm w-full">
-        </div>
-
+        </div> {% endcomment %}
+        <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+          The address that will be used, will be the one that you provide to PayPal, please chose the country that you live in the checkbox below!
+      </p>
         <!-- Shipping section -->
         <div class="mt-4 text-white">
           <label class="text-white font-medium inline-block mb-3 text-sm uppercase">Shipping</label>

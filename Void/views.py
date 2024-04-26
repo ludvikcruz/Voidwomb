@@ -769,9 +769,9 @@ def create_payment(request):
         for produto_id, info_produto in cart.items():
             produto = get_object_or_404(Produto, id=produto_id)
             quantidade = info_produto['quantidade']
-            if produto.stock < quantidade:
+            #if produto.stock < quantidade:
                 #messages.error(request, f"O produto {produto.nome} está fora de estoque.")
-                return HttpResponseRedirect(reverse('carrinho'))  # Redirecione de volta para a página do carrinho
+            #    return HttpResponseRedirect(reverse('carrinho'))  # Redirecione de volta para a página do carrinho
 
 
         acronimo_pag = request.POST.get('pais')

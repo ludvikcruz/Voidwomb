@@ -20,7 +20,7 @@ load_dotenv()
 
 
 paypalrestsdk.configure({
-    "mode": "sandbox",  # "sandbox" para desenvolvimento e testes, "live" para produção
+    "mode": "live",  # "sandbox" para desenvolvimento e testes, "live" para produção
     "client_id":os.getenv('PAYPAL_CLIENT_ID'),
     "client_secret":os.getenv('PAYPAL_CLIENT_SECRET'),
 })

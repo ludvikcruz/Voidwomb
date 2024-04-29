@@ -18,6 +18,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from Void import views
+from django.views.generic import TemplateView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -85,6 +87,10 @@ urlpatterns = [
     path('cart/payment/cancelled/', views.payment_cancelled, name='payment_cancelled'),
     path('cart/payment/success/<str:payment_id>', views.payment_success, name='payment_suc'),
     
+    
+    path('favicon.ico', TemplateView.as_view(template_name="favicon.ico"), name='favicon'),
+    path('robots.txt', TemplateView.as_view(template_name="robots.txt"), name='robots'),
+    path('.well-known/security.txt', TemplateView.as_view(template_name="security.txt"), name='security'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

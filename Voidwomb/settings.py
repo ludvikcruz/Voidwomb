@@ -48,7 +48,7 @@ SECRET_KEY = 'django-insecure-3vndy%grhk*7v(et3lpwn1+0_-)776klg0@6vx)#2krt==^@z9
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['plantbasedhub.store','voidwomb.com','13.51.89.200', '127.0.0.1']
+ALLOWED_HOSTS = ['51.20.79.157','plantbasedhub.store','voidwomb.com','13.51.89.200', '127.0.0.1']
 
 
 

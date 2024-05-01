@@ -22,7 +22,7 @@ load_dotenv()
 paypalrestsdk.configure({
     "mode": "live",  # "sandbox" para desenvolvimento e testes, "live" para produção
     "client_id":os.getenv('PAYPAL_CLIENT_ID'),
-    "client_secret":"EF5llTOepAA_qlkLiFWFkWu6vi2T48JRnjeMvYkNpfHuzdEvVb3vAnx6rn_asqPeJZpTPQ0Odb9y2kO2",
+    "client_secret":os.getenv('PAYPAL_CLIENT_SECRET'),
 })
 
 
@@ -48,9 +48,8 @@ SECRET_KEY = 'django-insecure-3vndy%grhk*7v(et3lpwn1+0_-)776klg0@6vx)#2krt==^@z9
 DEBUG = True
 
 
-ALLOWED_HOSTS = ['13.50.182.110','www.voidbomb.com','plantbasedhub.store','voidwomb.com','13.51.89.200', '127.0.0.1']
+ALLOWED_HOSTS = ['plantbasedhub.store','voidwomb.com','13.51.89.200', '127.0.0.1']
 
-CSRF_TRUSTED_ORIGINS = ['https://*.ngrok-free.app']
 
 
 
@@ -79,8 +78,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'Adm.middleware.AdminRequiredMiddleware',
-    #'Void.middleware.Custom404Middleware',
-    #'Void.middleware.Custom500Middleware',
+    'Void.middleware.Custom404Middleware',
+    'Void.middleware.Custom500Middleware',
 ]
 
 ROOT_URLCONF = 'Voidwomb.urls'
